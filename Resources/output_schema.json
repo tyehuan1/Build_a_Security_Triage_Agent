@@ -1,0 +1,561 @@
+{
+  "description": "Structure of the assessment output: required fields, types and allowed values. Policy logic (scores, rating, rule) lives in policy.py; cross-field consistency checks live in validate.py.",
+  "type": "object",
+  "required": [
+    "assessment_id",
+    "generated_at",
+    "run_metadata",
+    "asset",
+    "threat",
+    "decision",
+    "severity_vs_local_risk",
+    "rationale",
+    "evidence",
+    "assumptions",
+    "unknowns",
+    "confidence",
+    "action",
+    "tool_trace",
+    "analyst_review"
+  ],
+  "properties": {
+    "$comment": {"type": "string"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "run_metadata": {
+      "type": "object",
+      "required": ["agent_version", "policy_version", "model", "threat_input", "environment_snapshot"],
+      "properties": {
+        "agent_version": {"type": "string"},
+        "policy_version": {"type": "string"},
+        "model": {
+          "type": "object",
+          "required": ["provider", "name"],
+          "properties": {
+            "provider": {"type": "string"},
+            "name": {"type": "string"},
+            "temperature": {"type": "number", "minimum": 0},
+            "max_tool_calls": {"type": "integer", "minimum": 1}
+          }
+        },
+        "threat_input": {"$ref": "#/$defs/saved_input"},
+        "environment_snapshot": {
+          "allOf": [
+            {"$ref": "#/$defs/saved_input"},
+            {
+              "type": "object",
+              "required": ["data_type"],
+              "properties": {
+                "data_type": {"enum": ["simulated", "sanitized_real", "live"]}
+              }
+            }
+          ]
+        }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "required": ["asset_id", "asset_name", "services", "operating_system", "os_build", "network_zone"],
+      "properties": {
+        "asset_id": {"type": "string"},
+        "environment_record": {
+          "type": "string",
+          "description": "JSON path of the asset record in windows_enterprise_environment.json, e.g. assets[asset_id=W01]"
+        },
+        "asset_name": {"type": "string"},
+        "services": {"type": "array", "items": {"type": "string"}},
+        "host_count": {"type": ["integer", "null"], "minimum": 0},
+        "sites": {"type": ["object", "null"], "additionalProperties": {"type": "integer", "minimum": 0}},
+        "tier": {"type": ["string", "null"]},
+        "operating_system": {"type": ["string", "null"]},
+        "os_build": {
+          "type": ["string", "null"],
+          "description": "null when unknown; must then appear in unknowns[]"
+        },
+        "network_zone": {"type": ["string", "null"]},
+        "subnets": {"type": "array", "items": {"type": "string"}},
+        "scope_check": {
+          "type": "object",
+          "required": ["query", "result", "evidence_ids"],
+          "properties": {
+            "query": {"type": "string"},
+            "result": {"type": "string"},
+            "evidence_ids": {"$ref": "#/$defs/evidence_ids"}
+          }
+        }
+      }
+    },
+    "threat": {
+      "type": "object",
+      "required": ["cve_id", "title", "weakness_type", "evidence_ids"],
+      "properties": {
+        "cve_id": {"type": "string", "pattern": "^CVE-\\d{4}-\\d{4,}$"},
+        "title": {"type": "string"},
+        "weakness_type": {
+          "enum": [
+            "software_vulnerability",
+            "misconfiguration",
+            "excessive_permission",
+            "exposed_credential"
+          ]
+        },
+        "affected_component": {"type": "string"},
+        "affected_products_relevant": {"type": "array", "items": {"type": "string"}},
+        "fix": {
+          "type": ["object", "null"],
+          "properties": {
+            "kb": {"type": ["string", "null"]},
+            "fixed_build": {"type": ["string", "null"]}
+          }
+        },
+        "evidence_ids": {"$ref": "#/$defs/evidence_ids"}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "required": ["rating", "policy_rule_applied", "gate_reached", "summary", "requires_analyst_review"],
+      "properties": {
+        "rating": {"$ref": "#/$defs/decision_value"},
+        "policy_rule_applied": {"$ref": "#/$defs/policy_rule"},
+        "gate_reached": {"enum": ["Gate 1", "Gate 2"]},
+        "summary": {"type": "string", "minLength": 1},
+        "missing_decisive_facts": {"type": "array", "items": {"type": "string", "pattern": "^U\\d+$"}},
+        "provisional": {
+          "type": ["object", "null"],
+          "description": "Optional. What the rating would be if the missing fact resolves as vulnerable. Never binding.",
+          "required": ["rating", "policy_rule", "condition", "binding"],
+          "properties": {
+            "rating": {"enum": ["High", "Medium", "Low"]},
+            "policy_rule": {"type": "string", "pattern": "^P-[HML]-L[0-6]I[0-2]$"},
+            "condition": {"type": "string"},
+            "binding": {"const": false}
+          }
+        },
+        "requires_analyst_review": {"type": "boolean"}
+      }
+    },
+    "severity_vs_local_risk": {
+      "type": "object",
+      "required": ["technical_severity", "local_risk", "explanation"],
+      "properties": {
+        "technical_severity": {
+          "type": "object",
+          "required": ["cvss_version", "base_score", "vector", "source", "evidence_ids"],
+          "properties": {
+            "cvss_version": {"type": ["string", "null"]},
+            "base_score": {"type": ["number", "null"], "minimum": 0, "maximum": 10},
+            "base_severity": {"enum": ["None", "Low", "Medium", "High", "Critical", null]},
+            "vector": {"type": ["string", "null"]},
+            "source": {"type": ["string", "null"]},
+            "evidence_ids": {"$ref": "#/$defs/evidence_ids"}
+          }
+        },
+        "local_risk": {"type": "string"},
+        "explanation": {"type": "string", "minLength": 1}
+      }
+    },
+    "rationale": {
+      "type": "object",
+      "required": ["applicability", "gate_2_status", "likelihood", "impact", "matrix_result"],
+      "properties": {
+        "applicability": {
+          "type": "object",
+          "required": ["status", "gate_1_outcome", "conditions"],
+          "properties": {
+            "status": {"enum": ["Confirmed", "Not Applicable", "Unknown", "Conflicting"]},
+            "gate_1_outcome": {"enum": ["P-NA", "P-IE", "P-RV-C", "P-RV-F", "Gate 2"]},
+            "conditions": {
+              "type": "array",
+              "minItems": 3,
+              "items": {
+                "type": "object",
+                "required": ["id", "description", "result", "basis", "evidence_ids"],
+                "properties": {
+                  "id": {"type": "string", "pattern": "^C\\d+$"},
+                  "description": {"type": "string"},
+                  "result": {"enum": ["true", "false", "unknown", "conflicting"]},
+                  "basis": {"type": "string"},
+                  "evidence_ids": {"$ref": "#/$defs/evidence_ids"}
+                }
+              }
+            }
+          }
+        },
+        "gate_2_status": {
+          "enum": ["evaluated", "provisional", "not_evaluated"],
+          "description": "evaluated = applicability Confirmed; provisional = computed for prioritization only while Gate 1 is P-IE; not_evaluated = likelihood/impact/matrix_result are null"
+        },
+        "likelihood": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "required": [
+                "aggregation",
+                "factors",
+                "raw_sum",
+                "reachability_cap_applied",
+                "final_score",
+                "level"
+              ],
+              "properties": {
+                "aggregation": {"const": "sum"},
+                "factors": {
+                  "type": "object",
+                  "required": ["reachability", "exploitability", "exploit_activity"],
+                  "properties": {
+                    "reachability": {
+                      "allOf": [
+                        {"$ref": "#/$defs/factor"},
+                        {
+                          "type": "object",
+                          "required": ["defaulted"],
+                          "properties": {"defaulted": {"type": "boolean"}}
+                        }
+                      ]
+                    },
+                    "exploitability": {
+                      "allOf": [
+                        {"$ref": "#/$defs/factor"},
+                        {
+                          "type": "object",
+                          "properties": {
+                            "cvss_av": {"enum": ["N", "A", "L", "P", null]},
+                            "cvss_ac": {"enum": ["L", "H", null]},
+                            "cvss_pr": {"enum": ["N", "L", "H", null]},
+                            "cvss_ui": {"enum": ["N", "R", "P", "A", null]}
+                          }
+                        }
+                      ]
+                    },
+                    "exploit_activity": {
+                      "allOf": [
+                        {"$ref": "#/$defs/factor"},
+                        {
+                          "type": "object",
+                          "required": [
+                            "kev_listed",
+                            "credible_in_the_wild",
+                            "public_poc",
+                            "vendor_exploitation_likely"
+                          ],
+                          "properties": {
+                            "kev_listed": {
+                              "type": ["boolean", "null"],
+                              "description": "From lookup_kev. null if the lookup failed with no cache."
+                            },
+                            "credible_in_the_wild": {
+                              "type": ["boolean", "null"],
+                              "description": "Credible vendor, government or security-vendor report of exploitation outside KEV (tavily_search)."
+                            },
+                            "public_poc": {
+                              "type": ["boolean", "null"],
+                              "description": "Credible public proof of concept (tavily_search). null = not determined."
+                            },
+                            "vendor_exploitation_likely": {
+                              "type": ["boolean", "null"],
+                              "description": "Vendor rates exploitation as likely (e.g. Microsoft 'Exploitation More Likely')."
+                            },
+                            "vendor_exploitability_assessment": {
+                              "type": ["string", "null"],
+                              "description": "The vendor's wording, for the reader."
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "raw_sum": {"type": "integer", "minimum": 0, "maximum": 6},
+                "reachability_cap_applied": {"type": "boolean"},
+                "final_score": {"type": "integer", "minimum": 0, "maximum": 6},
+                "level": {"enum": ["Low", "Medium", "High"]}
+              }
+            }
+          ]
+        },
+        "impact": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "required": ["aggregation", "factors", "base_score", "adjustments", "final_score", "level"],
+              "properties": {
+                "aggregation": {"const": "max"},
+                "factors": {
+                  "type": "object",
+                  "required": ["asset_criticality", "blast_radius"],
+                  "properties": {
+                    "asset_criticality": {"$ref": "#/$defs/factor"},
+                    "blast_radius": {"$ref": "#/$defs/factor"}
+                  }
+                },
+                "base_score": {"type": "integer", "minimum": 0, "maximum": 2},
+                "adjustments": {
+                  "type": "array",
+                  "description": "Always report both ADJ-RTO and ADJ-CIA, binding or not.",
+                  "minItems": 2,
+                  "items": {
+                    "type": "object",
+                    "required": ["id", "rule", "input_value", "input_status", "triggered", "binding", "effect"],
+                    "properties": {
+                      "id": {"enum": ["ADJ-RTO", "ADJ-CIA"]},
+                      "rule": {"type": "string"},
+                      "input_value": {
+                        "type": ["number", "string", "null"],
+                        "description": "ADJ-RTO: RTO in hours (number) or null. ADJ-CIA: 'C:x/I:x/A:x'."
+                      },
+                      "input_status": {"enum": ["known", "unknown"]},
+                      "triggered": {"type": "boolean"},
+                      "binding": {"type": "boolean"},
+                      "effect": {
+                        "enum": [-1, 0, 1],
+                        "description": "Nominal change when triggered (+1 RTO, -1 CIA), 0 when not triggered. 'binding' says whether it changed the final score."
+                      },
+                      "note": {"type": "string"}
+                    }
+                  }
+                },
+                "final_score": {"type": "integer", "minimum": 0, "maximum": 2},
+                "level": {"enum": ["Low", "Medium", "High"]}
+              }
+            }
+          ]
+        },
+        "matrix_result": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "required": ["likelihood_level", "impact_level", "rating", "policy_rule"],
+              "properties": {
+                "likelihood_level": {"enum": ["Low", "Medium", "High"]},
+                "impact_level": {"enum": ["Low", "Medium", "High"]},
+                "rating": {"enum": ["Low", "Medium", "High"]},
+                "policy_rule": {"type": "string", "pattern": "^P-[HML]-L[0-6]I[0-2]$"}
+              }
+            }
+          ]
+        },
+        "other_factors": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "evidence_id",
+          "fact",
+          "source_name",
+          "source_type",
+          "url_or_path",
+          "locator",
+          "retrieved_at",
+          "retrieval_mode",
+          "tool_call_id"
+        ],
+        "properties": {
+          "evidence_id": {"type": "string", "pattern": "^E\\d+$"},
+          "fact": {"type": "string", "minLength": 1},
+          "source_name": {"type": "string"},
+          "source_type": {
+            "enum": [
+              "cve_record",
+              "nvd",
+              "vendor_advisory",
+              "kb_article",
+              "kev",
+              "threat_intel",
+              "attack_mapping",
+              "web_search",
+              "environment_snapshot"
+            ]
+          },
+          "url_or_path": {"type": "string"},
+          "locator": {
+            "type": "string",
+            "minLength": 1,
+            "description": "For environment evidence, a JSON path into windows_enterprise_environment.json (e.g. assets[asset_id=W01], flows[flow_id=F09]). For external sources, a field path, section or table row."
+          },
+          "scenario_evidence_ids": {
+            "type": "array",
+            "items": {"type": "string", "pattern": "^S\\d{2}$"},
+            "description": "Scenario evidence records (S01-S06) that support this fact. Optional; use for environment evidence."
+          },
+          "published_date": {"type": ["string", "null"], "format": "date"},
+          "last_modified_date": {"type": ["string", "null"], "format": "date"},
+          "retrieved_at": {"type": "string", "format": "date-time"},
+          "retrieval_mode": {"enum": ["live", "cached", "simulated"]},
+          "fallback_reason": {"type": ["string", "null"]},
+          "tool_call_id": {"type": "string", "pattern": "^T\\d+$"}
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "statement", "reason", "affects"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^A\\d+$"},
+          "statement": {"type": "string"},
+          "reason": {"type": "string"},
+          "affects": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "question", "decisive", "why_it_matters", "default_applied", "how_to_resolve"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^U\\d+$"},
+          "question": {"type": "string"},
+          "decisive": {"type": "boolean"},
+          "why_it_matters": {"type": "string"},
+          "default_applied": {"type": "string"},
+          "how_to_resolve": {"type": "string"}
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "fact", "values", "evidence_ids", "resolution"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^X\\d+$"},
+          "fact": {"type": "string"},
+          "values": {"type": "array", "items": {"type": "string"}, "minItems": 2},
+          "evidence_ids": {"$ref": "#/$defs/evidence_ids"},
+          "resolution": {"type": ["string", "null"]}
+        }
+      },
+      "description": "Optional. Include only when two or more sources disagree on a fact. Required (at least one entry) when policy_rule_applied is P-RV-C.",
+      "minItems": 1
+    },
+    "confidence": {
+      "type": "object",
+      "required": ["level", "explanation"],
+      "properties": {
+        "level": {"enum": ["Low", "Medium", "High"]},
+        "explanation": {"type": "string", "minLength": 1}
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": ["recommended_next_step", "priority", "evidence_to_resolve"],
+      "properties": {
+        "recommended_next_step": {"type": "string", "minLength": 1},
+        "priority": {"type": "string"},
+        "owner": {"type": "string"},
+        "interim_measures": {"type": "array", "items": {"type": "string"}},
+        "evidence_to_resolve": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["evidence_needed", "effect_on_decision"],
+            "properties": {"evidence_needed": {"type": "string"}, "effect_on_decision": {"type": "string"}}
+          }
+        }
+      }
+    },
+    "tool_trace": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One entry per tool call, in order. Retries and cache fallbacks happen inside a tool and are reported through attempts, fallback_used and mode.",
+      "items": {
+        "type": "object",
+        "required": [
+          "call_id",
+          "tool",
+          "selected_by",
+          "arguments",
+          "result_status",
+          "mode",
+          "attempts",
+          "fallback_used",
+          "evidence_ids",
+          "error"
+        ],
+        "properties": {
+          "call_id": {"type": "string", "pattern": "^T\\d+$"},
+          "tool": {"enum": ["environment_search", "lookup_vulnerability", "lookup_kev", "tavily_search"]},
+          "selected_by": {"enum": ["model", "code_intake"]},
+          "arguments": {"type": "object"},
+          "result_status": {"enum": ["found", "not_found", "failed", "invalid_request"]},
+          "mode": {
+            "enum": ["live", "cached", "mixed", "simulated", null],
+            "description": "mixed = lookup_vulnerability merged a live and a cached source. null when the call failed with no data."
+          },
+          "attempts": {"type": "integer", "minimum": 1, "maximum": 2},
+          "fallback_used": {"type": "boolean"},
+          "result_summary": {"type": ["string", "null"]},
+          "raw_output_path": {
+            "type": ["string", "null"],
+            "description": "Saved raw tool output for the run baseline."
+          },
+          "evidence_ids": {"$ref": "#/$defs/evidence_ids"},
+          "error": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": ["schema_valid", "checks"],
+      "properties": {
+        "schema_valid": {"type": "boolean"},
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["check", "passed", "detail"],
+            "properties": {
+              "check": {"type": "string"},
+              "passed": {"type": "boolean"},
+              "detail": {"type": "string"}
+            }
+          }
+        }
+      },
+      "description": "Written by validate.py --write."
+    },
+    "analyst_review": {
+      "type": "object",
+      "required": ["status", "reviewer", "reviewed_at", "citations_verified", "agrees_with_rating"],
+      "properties": {
+        "status": {"enum": ["pending", "approved", "changed", "rejected"]},
+        "reviewer": {"type": ["string", "null"]},
+        "reviewed_at": {"type": ["string", "null"], "format": "date-time"},
+        "citations_verified": {"type": ["boolean", "null"]},
+        "agrees_with_rating": {"type": ["boolean", "null"]},
+        "group_consensus_rating": {"enum": ["High", "Medium", "Low", "Insufficient Evidence", "Review Needed", null]},
+        "notes": {"type": ["string", "null"]}
+      }
+    }
+  },
+  "$defs": {
+    "decision_value": {"enum": ["High", "Medium", "Low", "Insufficient Evidence", "Review Needed"]},
+    "policy_rule": {"type": "string", "pattern": "^(P-NA|P-IE|P-RV-C|P-RV-F|P-[HML]-L[0-6]I[0-2])$"},
+    "evidence_ids": {"type": "array", "items": {"type": "string", "pattern": "^E\\d+$"}},
+    "saved_input": {
+      "type": "object",
+      "required": ["id", "path"],
+      "properties": {"id": {"type": "string"}, "path": {"type": "string"}}
+    },
+    "factor": {
+      "type": "object",
+      "required": ["score", "max", "basis", "evidence_ids"],
+      "properties": {
+        "score": {"type": "integer", "minimum": 0, "maximum": 2},
+        "max": {"const": 2},
+        "basis": {"type": "string", "minLength": 1},
+        "evidence_ids": {"$ref": "#/$defs/evidence_ids"}
+      }
+    }
+  }
+}
