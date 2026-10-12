@@ -1,0 +1,24 @@
+{
+  "$comment": "Provenance of cached fallback copies. tools use saved_at as retrieved_at when a cached copy is used.",
+  "files": {
+    "Resources/CVE-2026-69730.json": {
+      "source": "cve",
+      "source_url": "https://github.com/CVEProject/cvelistV5/blob/main/cves/2026/69xxx/CVE-2026-69730.json",
+      "saved_at": "2026-10-10T15:46:00-04:00",
+      "sha256": "5b0b076cceec0c8059b16e621aa1d57654c85a89b6eb4972300570930e97cef1"
+    },
+    "Resources/nvd_CVE-2026-69730.json": {
+      "source": "nvd",
+      "source_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2026-69730",
+      "saved_at": "2026-10-11T20:49:59-04:00",
+      "sha256": "299655985d81b59575259808d4b1a383a2ce2ae741693d390c22aef35efe6225"
+    },
+    "Resources/known_exploited_vulnerabilities.json": {
+      "source": "kev",
+      "source_url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+      "saved_at": "2026-10-11T20:33:00-04:00",
+      "catalog_version": "2026.10.08",
+      "sha256": "fb1621beec7db19d99c1f919dede3d4cc01ad88acd16f79f1592929c4826dfee"
+    }
+  }
+}

@@ -1,11 +1,11 @@
 """Validate an assessment JSON.
 
-1. Structure: JSON Schema (assessment_schema.json) - fields, types, allowed values.
+1. Structure: JSON Schema (Resources/output_schema.json) - fields, types, allowed values.
 2. Consistency: cross-field rules the schema does not express - evidence references,
    source labeling, tool-contract rules, and agreement with policy.py.
 
 Usage:
-    python validate.py assessment.json [--schema assessment_schema.json] [--write]
+    python validate.py assessment.json [--schema Resources/output_schema.json] [--write]
 
 --write stores the check results in the assessment's "validation" block.
 Exit code 0 when every check passes, 1 otherwise.
@@ -23,13 +23,14 @@ import jsonschema
 
 from policy import PolicyInputs, evaluate, parse_cvss_vector
 
-HERE = Path(__file__).resolve().parent
-DEFAULT_SCHEMA = HERE / "assessment_schema.json"
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_SCHEMA = ROOT / "Resources" / "output_schema.json"
 
 ENV_QUERY_TYPES = {"asset", "text", "flows", "business_service"}
 CVE_RE = re.compile(r"^CVE-\d{4}-\d{4,}$")
 EVIDENCE_ID_RE = re.compile(r'"(E\d+)"')
 DECISIVE_TOOLS = {"lookup_vulnerability", "environment_search"}
+SUCCESS = ("found", "not_found")
 
 
 def _check(results: list, name: str, problems: list[str]) -> None:
@@ -56,9 +57,19 @@ def check_evidence_refs(a: dict) -> list[str]:
 
 
 def check_tool_refs(a: dict) -> list[str]:
-    calls = {t["call_id"] for t in a.get("tool_trace", [])}
-    return [f"{e['evidence_id']} points to unknown tool call {e['tool_call_id']}"
-            for e in a.get("evidence", []) if e.get("tool_call_id") not in calls]
+    """Each evidence item must come from a successful call that lists it."""
+    calls = {t["call_id"]: t for t in a.get("tool_trace", [])}
+    problems = []
+    for e in a.get("evidence", []):
+        eid, cid = e["evidence_id"], e.get("tool_call_id")
+        t = calls.get(cid)
+        if t is None:
+            problems.append(f"{eid} points to unknown tool call {cid}")
+        elif t["result_status"] not in SUCCESS:
+            problems.append(f"{eid} cites {cid}, which returned {t['result_status']}")
+        elif eid not in t["evidence_ids"]:
+            problems.append(f"{cid}.evidence_ids does not list {eid}")
+    return problems
 
 
 def check_unknown_refs(a: dict) -> list[str]:
@@ -127,7 +138,7 @@ def check_kev_matches_tool(a: dict) -> list[str]:
     if not lk:
         return []
     recorded = lk["factors"]["exploit_activity"]["kev_listed"]
-    kev_calls = [t for t in a["tool_trace"] if t["tool"] == "lookup_kev" and t["result_status"] in ("found", "not_found")]
+    kev_calls = [t for t in a["tool_trace"] if t["tool"] == "lookup_kev" and t["result_status"] in SUCCESS]
     if not kev_calls:
         return [] if recorded is None else ["kev_listed is set but no successful lookup_kev call exists"]
     expected = kev_calls[-1]["result_status"] == "found"
@@ -156,10 +167,15 @@ def check_cvss_consistency(a: dict) -> list[str]:
 def inputs_from_assessment(a: dict) -> PolicyInputs:
     """Rebuild the policy inputs from what the assessment recorded."""
     r = a["rationale"]
+    trace = a["tool_trace"]
     vector = a["severity_vs_local_risk"]["technical_severity"].get("vector")
+    # A decisive tool counts as failed when no call to it succeeded (all failed, or never run).
+    completed = {t["tool"] for t in trace if t["result_status"] in SUCCESS}
     kw = dict(
         conditions={c["id"]: c["result"] for c in r["applicability"]["conditions"]},
-        decisive_tool_failure=any(t["tool"] in DECISIVE_TOOLS and t["result_status"] == "failed" for t in a["tool_trace"]),
+        decisive_tool_failure=not DECISIVE_TOOLS <= completed,
+        any_tool_failed=any(t["result_status"] == "failed" for t in trace),
+        assumptions_used=bool(a.get("assumptions")),
         cvss_metrics=parse_cvss_vector(vector) if vector else None,
     )
     if r.get("likelihood"):
@@ -204,6 +220,7 @@ def check_policy(a: dict) -> list[str]:
     for k in ("status", "gate_1_outcome"):
         _diff(f"applicability.{k}", exp["applicability"][k], r["applicability"][k], out)
     _diff("gate_2_status", exp["gate_2_status"], r["gate_2_status"], out)
+    _diff("confidence.level", exp["confidence"]["level"], a["confidence"]["level"], out)
 
     for block in ("likelihood", "impact", "matrix_result"):
         e, got = exp[block], r.get(block)
@@ -239,18 +256,18 @@ def check_policy(a: dict) -> list[str]:
 def validate_assessment(a: dict, schema: dict) -> dict:
     results: list = []
     schema_problems = check_schema(a, schema)
-    _check(results, "Output matches assessment_schema.json", schema_problems)
+    _check(results, "Output matches output_schema.json", schema_problems)
     if schema_problems:  # later checks assume a well-formed document
         return {"schema_valid": False, "checks": results}
     _check(results, "Every cited evidence_id exists and every evidence item is cited", check_evidence_refs(a))
-    _check(results, "Every evidence item points to a call in tool_trace", check_tool_refs(a))
+    _check(results, "Every evidence item comes from a successful call in tool_trace", check_tool_refs(a))
     _check(results, "Missing decisive facts are listed in unknowns[]", check_unknown_refs(a))
     _check(results, "Cached evidence has a fallback reason; environment evidence is labeled simulated", check_labels(a))
     _check(results, "Tool calls follow the tool contracts", check_tool_contracts(a))
     _check(results, "kev_listed matches the lookup_kev result", check_kev_matches_tool(a))
     _check(results, "Exploitability CVSS fields match the CVSS vector", check_cvss_consistency(a))
     _check(results, "Review Needed for conflicting evidence lists the conflicts", check_conflicts(a))
-    _check(results, "Decision, scores and matrix match policy.py", check_policy(a))
+    _check(results, "Decision, scores, matrix and confidence match policy.py", check_policy(a))
     return {"schema_valid": True, "checks": results}
 
 
@@ -261,13 +278,13 @@ def main() -> int:
     ap.add_argument("--write", action="store_true", help="store results in the assessment's validation block")
     args = ap.parse_args()
 
-    a = json.loads(args.assessment.read_text())
-    report = validate_assessment(a, json.loads(args.schema.read_text()))
+    a = json.loads(args.assessment.read_text(encoding="utf-8"))
+    report = validate_assessment(a, json.loads(args.schema.read_text(encoding="utf-8")))
     for c in report["checks"]:
         print(f"[{'PASS' if c['passed'] else 'FAIL'}] {c['check']}" + ("" if c["passed"] else f"\n       {c['detail']}"))
     if args.write:
         a["validation"] = report
-        args.assessment.write_text(json.dumps(a, indent=2, ensure_ascii=False) + "\n")
+        args.assessment.write_text(json.dumps(a, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return 0 if all(c["passed"] for c in report["checks"]) else 1
 
 

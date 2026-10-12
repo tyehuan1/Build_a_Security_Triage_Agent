@@ -14,12 +14,18 @@ below fixed build). Precedence when several outcomes are possible:
     4. any condition "unknown"     -> P-IE  (Insufficient Evidence)
     5. all "true"                  -> Gate 2
 A confirmed "false" wins because one missing prerequisite is enough to show
-the vulnerability is not present. The design doc lists the outcomes but not
-their precedence; this order is the group's choice.
+the vulnerability is not present. This order follows the "Applicability
+gate 1" row of the design's workflow table.
 
 Gate 2 - Likelihood (sum, 0-6) x Impact (max, 0-2) -> rating matrix.
 When Gate 1 ends in P-IE and Gate 2 inputs are available, Gate 2 is also
 computed as a non-binding provisional rating for prioritization.
+
+Confidence (design, "Evidence and Uncertainty"):
+    Low    - a decisive fact is unknown or a required lookup failed (P-IE, P-RV-C, P-RV-F)
+    Medium - an assumption fed applicability or scoring, reachability was
+             defaulted, or any tool call failed
+    High   - every factor is cited to a source
 """
 
 from __future__ import annotations
@@ -30,6 +36,7 @@ from typing import Optional
 POLICY_VERSION = "rating-policy-v1.0"
 
 CONDITION_VALUES = {"true", "false", "unknown", "conflicting"}
+REQUIRED_CONDITIONS = {"C1", "C2", "C3"}
 LEVEL_CODE = {"Low": "L", "Medium": "M", "High": "H"}
 IMPACT_LEVELS = ["Low", "Medium", "High"]
 
@@ -48,6 +55,10 @@ class PolicyInputs:
     conditions: dict[str, str]                  # {"C1": "true", "C2": "true", "C3": "unknown"}
     decisive_tool_failure: bool = False         # lookup_vulnerability or environment_search failed, no cache
 
+    # Confidence
+    any_tool_failed: bool = False               # any tool call ended in status=failed
+    assumptions_used: bool = False              # an assumption fed applicability or scoring
+
     # Likelihood
     reachability: Optional[int] = None          # 0 isolated, 1 broad internal, 2 Internet-facing; None -> default 1
     cvss_metrics: Optional[dict[str, str]] = None  # {"AV": "N", "AC": "L", "PR": "N", "UI": "N", "C": "H", "I": "H", "A": "H"}
@@ -62,6 +73,9 @@ class PolicyInputs:
     rto_hours: Optional[float] = None
 
     def __post_init__(self) -> None:
+        missing = REQUIRED_CONDITIONS - set(self.conditions)
+        if missing:
+            raise ValueError(f"conditions must include {sorted(REQUIRED_CONDITIONS)}; missing {sorted(missing)}")
         for cid, val in self.conditions.items():
             if val not in CONDITION_VALUES:
                 raise ValueError(f"{cid}: '{val}' is not one of {sorted(CONDITION_VALUES)}")
@@ -186,6 +200,27 @@ def matrix(lk: dict, im: dict) -> dict:
     }
 
 
+# ---------------------------------------------------------------- Confidence
+
+def confidence(inp: PolicyInputs, outcome: str, lk: Optional[dict]) -> dict:
+    reasons = []
+    if outcome == "P-IE":
+        reasons.append("a decisive applicability fact is unknown")
+    elif outcome == "P-RV-C":
+        reasons.append("sources conflict on a decisive applicability fact")
+    elif outcome == "P-RV-F":
+        reasons.append("a required lookup failed with no cached fallback")
+    low = bool(reasons)
+    if inp.any_tool_failed and outcome != "P-RV-F":
+        reasons.append("at least one tool call failed")
+    if inp.assumptions_used:
+        reasons.append("assumptions were used in applicability or scoring")
+    if lk and lk["factors"]["reachability"]["defaulted"]:
+        reasons.append("reachability was unknown and defaulted to 1")
+    level = "Low" if low else "Medium" if reasons else "High"
+    return {"level": level, "reasons": reasons or ["every factor is cited to a source"]}
+
+
 # ---------------------------------------------------------------- Entry point
 
 def evaluate(inp: PolicyInputs) -> dict:
@@ -220,6 +255,7 @@ def evaluate(inp: PolicyInputs) -> dict:
         "likelihood": lk,
         "impact": im,
         "matrix_result": mx,
+        "confidence": confidence(inp, outcome, lk),
     }
 
 

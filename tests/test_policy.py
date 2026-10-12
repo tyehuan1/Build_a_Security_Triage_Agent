@@ -6,14 +6,11 @@ unauthenticated RCE (AV:N/AC:L/PR:N/UI:N, C/I/A High), not in KEV, vendor
 RTO 4h. Expected values are set from the group's documented policy.
 """
 
-import sys
 from dataclasses import replace
-from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from policy import PolicyInputs, evaluate, exploitability_score  # noqa: E402
+from policy import PolicyInputs, evaluate, exploitability_score
 
 CVSS = {"AV": "N", "AC": "L", "PR": "N", "UI": "N", "C": "H", "I": "H", "A": "H"}
 
@@ -36,6 +33,7 @@ def test_baseline_is_insufficient_evidence_with_provisional_high():
     assert r["decision"]["policy_rule_applied"] == "P-IE"
     assert r["decision"]["provisional"] == {"rating": "High", "policy_rule": "P-H-L4I2", "binding": False}
     assert r["gate_2_status"] == "provisional"
+    assert r["confidence"]["level"] == "Low"  # decisive fact (C3) unknown
 
 
 # ---------------------------------------------------------------- policy check 1: applicability change (impact held constant)
@@ -138,11 +136,43 @@ def test_low_cia_reduces_impact():
     assert r["impact"]["final_score"] == 1
 
 
+# ---------------------------------------------------------------- confidence
+
+CONFIRMED = {"C1": "true", "C2": "true", "C3": "true"}
+
+
+def test_confidence_high_when_all_cited():
+    assert evaluate(baseline(conditions=CONFIRMED))["confidence"]["level"] == "High"
+
+
+@pytest.mark.parametrize("changes", [
+    {"assumptions_used": True},
+    {"any_tool_failed": True},     # e.g. tavily_search failed
+    {"reachability": None},        # defaulted to 1
+])
+def test_confidence_medium(changes):
+    assert evaluate(baseline(conditions=CONFIRMED, **changes))["confidence"]["level"] == "Medium"
+
+
+@pytest.mark.parametrize("changes", [
+    {},                                                                    # P-IE
+    {"conditions": {"C1": "true", "C2": "true", "C3": "conflicting"}},     # P-RV-C
+    {"decisive_tool_failure": True, "any_tool_failed": True},              # P-RV-F
+])
+def test_confidence_low(changes):
+    assert evaluate(baseline(**changes))["confidence"]["level"] == "Low"
+
+
 # ---------------------------------------------------------------- input guards
 
 def test_invalid_condition_value_rejected():
     with pytest.raises(ValueError):
-        PolicyInputs(conditions={"C1": "maybe"})
+        PolicyInputs(conditions={"C1": "maybe", "C2": "true", "C3": "true"})
+
+
+def test_missing_condition_rejected():
+    with pytest.raises(ValueError):
+        PolicyInputs(conditions={"C1": "true", "C2": "true"})
 
 
 def test_confirmed_without_gate_2_inputs_raises():

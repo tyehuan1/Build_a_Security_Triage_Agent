@@ -2,17 +2,17 @@
 
 import copy
 import json
-import sys
 from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-from validate import validate_assessment  # noqa: E402
+from validate import validate_assessment
 
-SCHEMA = json.loads((ROOT / "assessment_schema.json").read_text())
-EXAMPLE = json.loads((ROOT / "assessment_example_CVE-2026-69730_W01.json").read_text())
+ROOT = Path(__file__).resolve().parents[1]
+
+SCHEMA = json.loads((ROOT / "Resources" / "output_schema.json").read_text(encoding="utf-8"))
+EXAMPLE = json.loads((ROOT / "tests" / "fixtures" / "assessment_example_CVE-2026-69730_W01.json").read_text(encoding="utf-8"))
+POLICY_CHECK = "Decision, scores, matrix and confidence match policy.py"
 
 
 def failed_checks(a):
@@ -66,16 +66,26 @@ def _missing_field(a):
     del a["action"]
 
 
+def _wrong_confidence(a):
+    a["confidence"]["level"] = "High"
+
+
+def _evidence_from_failed_call(a):
+    next(t for t in a["tool_trace"] if t["evidence_ids"])["result_status"] = "failed"
+
+
 @pytest.mark.parametrize("mutate, expected_check", [
-    (_set_kev_true_but_score_1, "Decision, scores and matrix match policy.py"),
-    (_wrong_rating, "Decision, scores and matrix match policy.py"),
-    (_bad_matrix, "Decision, scores and matrix match policy.py"),
-    (_vuln_lookup_failed_but_not_review, "Decision, scores and matrix match policy.py"),
+    (_set_kev_true_but_score_1, POLICY_CHECK),
+    (_wrong_rating, POLICY_CHECK),
+    (_bad_matrix, POLICY_CHECK),
+    (_vuln_lookup_failed_but_not_review, POLICY_CHECK),
+    (_wrong_confidence, POLICY_CHECK),
     (_cite_missing_evidence, "Every cited evidence_id exists and every evidence item is cited"),
+    (_evidence_from_failed_call, "Every evidence item comes from a successful call in tool_trace"),
     (_cached_without_reason, "Cached evidence has a fallback reason; environment evidence is labeled simulated"),
     (_env_evidence_labeled_live, "Cached evidence has a fallback reason; environment evidence is labeled simulated"),
     (_env_search_without_query, "Tool calls follow the tool contracts"),
-    (_missing_field, "Output matches assessment_schema.json"),
+    (_missing_field, "Output matches output_schema.json"),
 ])
 def test_broken_copies_fail(mutate, expected_check):
     assert expected_check in broken(mutate)

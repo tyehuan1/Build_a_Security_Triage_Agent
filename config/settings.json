@@ -1,0 +1,77 @@
+{
+  "$comment": "Non-secret run configuration. Copied into every run folder as part of the baseline. Secrets live in .env.",
+  "agent_version": "0.1.0",
+  "policy_version": "rating-policy-v1.0",
+  "model": {
+    "provider": "Ollama Cloud",
+    "name": "gemma4:31b",
+    "base_url": "https://ollama.com",
+    "temperature": 0,
+    "timeout_s": 180,
+    "max_tool_rounds": 5,
+    "max_tool_calls": 20
+  },
+  "inputs": {
+    "cve_id": "CVE-2026-69730",
+    "asset_id": "W01",
+    "threat_input": {"id": "CVE-2026-69730", "path": "Resources/CVE-2026-69730.json"},
+    "environment_snapshot": {
+      "id": "northbridge-windows-enterprise-v1.0",
+      "path": "Resources/windows_enterprise_environment.json",
+      "data_type": "simulated"
+    }
+  },
+  "sources": {
+    "cve": {
+      "name": "CVE Program (cvelistV5)",
+      "url": "https://cveawg.mitre.org/api/cve/{cve_id}",
+      "display_url": "https://github.com/CVEProject/cvelistV5/blob/main/cves/2026/69xxx/{cve_id}.json",
+      "cache": "Resources/CVE-2026-69730.json"
+    },
+    "nvd": {
+      "name": "NIST NVD",
+      "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={cve_id}",
+      "display_url": "https://nvd.nist.gov/vuln/detail/{cve_id}",
+      "cache": "Resources/nvd_CVE-2026-69730.json"
+    },
+    "kev": {
+      "name": "CISA KEV",
+      "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+      "cache": "Resources/known_exploited_vulnerabilities.json"
+    },
+    "tavily": {
+      "name": "Tavily web search",
+      "url": "https://api.tavily.com/search",
+      "max_results_cap": 10,
+      "allowed_domains": [
+        "msrc.microsoft.com",
+        "support.microsoft.com",
+        "learn.microsoft.com",
+        "cisa.gov",
+        "nvd.nist.gov",
+        "cve.org",
+        "zerodayinitiative.com",
+        "rapid7.com",
+        "tenable.com",
+        "crowdstrike.com",
+        "unit42.paloaltonetworks.com",
+        "securelist.com",
+        "bleepingcomputer.com"
+      ]
+    }
+  },
+  "retry": {"attempts": 2, "backoff_s": 2, "http_timeout_s": 30},
+  "paths": {
+    "schema": "Resources/output_schema.json",
+    "cache_manifest": "Resources/cache_manifest.json",
+    "runs_dir": "runs"
+  },
+  "fault_injection": {
+    "$comment": "Controlled-failure switches. All false for a normal run; set from the CLI (--fail SOURCE) rather than editing here.",
+    "cve": false,
+    "nvd": false,
+    "kev": false,
+    "tavily": false,
+    "disable_cache": false
+  }
+}
