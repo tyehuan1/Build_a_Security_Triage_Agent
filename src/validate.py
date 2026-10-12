@@ -14,6 +14,7 @@ Exit code 0 when every check passes, 1 otherwise.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -106,10 +107,11 @@ def check_tool_contracts(a: dict) -> list[str]:
         cid, tool, args, status = t["call_id"], t["tool"], t["arguments"], t["result_status"]
         if status in ("failed", "invalid_request") and not t.get("error"):
             problems.append(f"{cid}: {status} without an error message")
-        if status == "invalid_request":
-            invalid_counts[tool] = invalid_counts.get(tool, 0) + 1
+        if status in ("invalid_request", "failed"):
+            if status == "invalid_request":
+                invalid_counts[tool] = invalid_counts.get(tool, 0) + 1
             if t["evidence_ids"]:
-                problems.append(f"{cid}: an invalid request cannot produce evidence")
+                problems.append(f"{cid}: a {status} call cannot produce evidence")
             continue
         if tool == "environment_search":
             if args.get("query_type") not in ENV_QUERY_TYPES:
@@ -130,6 +132,27 @@ def check_tool_contracts(a: dict) -> list[str]:
     for tool, n in invalid_counts.items():
         if n > 1:
             problems.append(f"{tool}: {n} invalid requests; only one correction attempt is allowed")
+    return problems
+
+
+def check_raw_outputs(a: dict) -> list[str]:
+    """Each saved raw tool output still exists, matches its SHA-256, and belongs to its trace entry."""
+    problems = []
+    for t in a.get("tool_trace", []):
+        rel = t.get("raw_output_path")
+        if not rel:
+            continue
+        p = Path(rel) if Path(rel).is_absolute() else ROOT / rel
+        if not p.is_file():
+            problems.append(f"{t['call_id']}: raw output {rel} not found")
+            continue
+        data = p.read_bytes()
+        if t.get("output_sha256") and hashlib.sha256(data).hexdigest() != t["output_sha256"]:
+            problems.append(f"{t['call_id']}: raw output SHA-256 does not match the trace")
+        raw = json.loads(data.decode("utf-8"))
+        for k_raw, k_trace in (("call_id", "call_id"), ("tool", "tool"), ("arguments", "arguments"), ("status", "result_status")):
+            if raw.get(k_raw) != t.get(k_trace):
+                problems.append(f"{t['call_id']}: raw output {k_raw} {raw.get(k_raw)!r} != trace {t.get(k_trace)!r}")
     return problems
 
 
@@ -264,6 +287,7 @@ def validate_assessment(a: dict, schema: dict) -> dict:
     _check(results, "Missing decisive facts are listed in unknowns[]", check_unknown_refs(a))
     _check(results, "Cached evidence has a fallback reason; environment evidence is labeled simulated", check_labels(a))
     _check(results, "Tool calls follow the tool contracts", check_tool_contracts(a))
+    _check(results, "Raw tool outputs exist, match their SHA-256 and their trace entry", check_raw_outputs(a))
     _check(results, "kev_listed matches the lookup_kev result", check_kev_matches_tool(a))
     _check(results, "Exploitability CVSS fields match the CVSS vector", check_cvss_consistency(a))
     _check(results, "Review Needed for conflicting evidence lists the conflicts", check_conflicts(a))
