@@ -56,6 +56,16 @@ class SourceResult:
     def ok(self) -> bool:
         return self.status == "ok"
 
+    @property
+    def cite_url(self) -> str:
+        """The address the data actually came from: the URL fetched (live), the original source
+        recorded in the cache manifest (cached), or the URL that was attempted (failed)."""
+        if self.mode == "live":
+            return self.receipt.get("final_url") or self.url
+        if self.mode == "cached":
+            return self.receipt.get("source_url") or self.url
+        return self.url
+
 
 def _load_cache(source: str, settings: dict, accept: Callable[[object], bool]) -> tuple[Optional[object], Optional[bytes], dict, Optional[str]]:
     """Return (data, raw, receipt, problem). problem is set when no usable cache exists."""
@@ -78,7 +88,8 @@ def _load_cache(source: str, settings: dict, accept: Callable[[object], bool]) -
     data = json.loads(raw.decode("utf-8"))
     if not accept(data):
         return None, None, {}, f"{rel} does not cover this request"
-    receipt = {"cache_path": rel, "sha256": digest, "saved_at": meta["saved_at"], "bytes": len(raw)}
+    receipt = {"cache_path": rel, "sha256": digest, "saved_at": meta["saved_at"], "bytes": len(raw),
+               "source_url": meta.get("source_url")}
     return data, raw, receipt, None
 
 

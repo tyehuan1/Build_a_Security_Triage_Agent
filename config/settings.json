@@ -28,13 +28,11 @@
     "cve": {
       "name": "CVE Program (cvelistV5)",
       "url": "https://cveawg.mitre.org/api/cve/{cve_id}",
-      "display_url": "https://github.com/CVEProject/cvelistV5/blob/main/cves/2026/69xxx/{cve_id}.json",
       "cache": "Resources/CVE-2026-69730.json"
     },
     "nvd": {
       "name": "NIST NVD",
       "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={cve_id}",
-      "display_url": "https://nvd.nist.gov/vuln/detail/{cve_id}",
       "cache": "Resources/nvd_CVE-2026-69730.json"
     },
     "kev": {

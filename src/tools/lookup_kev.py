@@ -18,7 +18,9 @@ def run(args: dict, settings: dict) -> ToolOutput:
     cve_id = args["cve_id"]
     res = fetch_kev(settings)
     receipts = [receipt_of(res)]
-    base = {"cve_id": cve_id, "source_url": settings["sources"]["kev"]["url"], "retrieved_at": res.retrieved_at, "mode": res.mode}
+    base = {"cve_id": cve_id, "source_url": res.cite_url, "retrieved_at": res.retrieved_at, "mode": res.mode}
+    if res.mode == "cached":
+        base["cache_path"] = res.receipt.get("cache_path")
 
     if not res.ok:
         result = {"status": "failed", "in_kev": None, "date_added": None, "known_ransomware_use": None,

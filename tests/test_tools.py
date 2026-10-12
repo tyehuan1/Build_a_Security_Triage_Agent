@@ -95,13 +95,23 @@ def test_vuln_from_caches(cached):
     assert r["cwe"] == ["CWE-416"]
     assert all(s["mode"] == "cached" and s["fallback_reason"] for s in r["sources"])
     assert out.source_raw["cve"] and out.source_raw["nvd"]
+    # cached data is cited to the original source recorded in the cache manifest, plus the cache file
+    manifest = json.loads(config.path(cached["paths"]["cache_manifest"]).read_text(encoding="utf-8"))["files"]
+    src = {s["name"]: s for s in r["sources"]}
+    assert src["CVE"]["url"] == manifest[cached["sources"]["cve"]["cache"]]["source_url"]
+    assert src["NVD"]["url"] == manifest[cached["sources"]["nvd"]["cache"]]["source_url"]
+    assert src["CVE"]["cache_path"] == cached["sources"]["cve"]["cache"]
 
 
 def test_vuln_mixed_live_and_cached(settings, net):
     settings["fault_injection"]["nvd"] = True
-    net(routes={"cveawg": FakeResponse(200, cache_json(settings, "cve"))})
+    live_url = "https://cveawg.mitre.org/api/cve/" + CVE
+    net(routes={"cveawg": FakeResponse(200, cache_json(settings, "cve"), url=live_url)})
     out = lookup_vulnerability.run({"cve_id": CVE}, settings)
     assert (out.status, out.mode) == ("found", "mixed")
+    src = {s["name"]: s for s in out.result["sources"]}
+    assert (src["CVE"]["mode"], src["CVE"]["url"]) == ("live", live_url)  # cited to the URL actually fetched
+    assert "cache_path" not in src["CVE"] and src["NVD"]["mode"] == "cached"
 
 
 def test_vuln_one_source_failed_uses_the_other(settings, net):

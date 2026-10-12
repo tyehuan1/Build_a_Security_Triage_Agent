@@ -252,7 +252,9 @@ def build_assessment(*, run: dict, intake: dict, settings: dict, facts: dict, po
             "prompt_version": run["prompt_version"],
             "model": {"provider": settings["model"]["provider"], "name": settings["model"]["name"],
                       "temperature": settings["model"]["temperature"], "max_tool_calls": settings["model"]["max_tool_calls"]},
-            "threat_input": dict(settings["inputs"]["threat_input"]),
+            "threat_input": {**settings["inputs"]["threat_input"],
+                             "role": "Saved case input (assignment requirement) and cached fallback for the CVE source. "
+                                     "Not shown to the model; live CVE/NVD data comes from lookup_vulnerability (see tool_trace)."},
             "environment_snapshot": dict(settings["inputs"]["environment_snapshot"]),
             **{k: run[k] for k in ("run_id", "run_dir", "code_version", "transcript_path", "plan_rounds",
                                    "fabrication_rejections", "rejected_tool_requests", "budget_refused_calls",

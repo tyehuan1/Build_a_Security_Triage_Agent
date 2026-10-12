@@ -135,6 +135,10 @@ def test_complete_run_gives_insufficient_evidence_with_provisional_high(env_sett
     assert (e_kev["source_type"], e_kev["retrieval_mode"]) == ("kev", "cached") and e_kev["fallback_reason"]
     e_env = next(e for e in a["evidence"] if e["tool_call_id"] == "T2")
     assert (e_env["retrieval_mode"], e_env["url_or_path"]) == ("simulated", "Resources/windows_enterprise_environment.json")
+    e_cve = next(e for e in a["evidence"] if e["tool_call_id"] == "T1")
+    assert (e_cve["retrieval_mode"], e_cve["url_or_path"]) == (
+        "cached", "https://github.com/CVEProject/cvelistV5/blob/main/cves/2026/69xxx/CVE-2026-69730.json")  # manifest source
+    assert "role" in a["run_metadata"]["threat_input"]
     e_web = next(e for e in a["evidence"] if e["tool_call_id"] == "T7")
     assert (e_web["source_type"], e_web["url_or_path"]) == ("vendor_advisory", MSRC_URL)
     # run record
