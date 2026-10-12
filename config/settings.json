@@ -12,8 +12,11 @@
     "max_tool_calls": 20
   },
   "inputs": {
+    "risk_question": "What is the risk that an unauthenticated remote code execution vulnerability in the Windows DNS Server service (CVE-2026-69730) poses to Northbridge Services' Domain Controllers (W01) given their role in identity services, patch status, reachability, likelihood of compromise, and the vulnerability's impact?",
     "cve_id": "CVE-2026-69730",
     "asset_id": "W01",
+    "vulnerable_service": "DNS Server",
+    "weakness_type": "software_vulnerability",
     "threat_input": {"id": "CVE-2026-69730", "path": "Resources/CVE-2026-69730.json"},
     "environment_snapshot": {
       "id": "northbridge-windows-enterprise-v1.0",

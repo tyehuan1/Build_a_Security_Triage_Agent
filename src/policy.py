@@ -8,6 +8,7 @@ rating itself.
 
 Gate 1 - Applicability (C1 affected OS, C2 DNS Server installed, C3 build
 below fixed build). Precedence when several outcomes are possible:
+    0. fact validation failed twice -> P-RV-F (the facts cannot be trusted at all)
     1. any condition "false"       -> P-NA  (Low, Not Applicable)
     2. decisive tool failure       -> P-RV-F (Review Needed)
     3. any condition "conflicting" -> P-RV-C (Review Needed)
@@ -54,6 +55,7 @@ class PolicyInputs:
 
     conditions: dict[str, str]                  # {"C1": "true", "C2": "true", "C3": "unknown"}
     decisive_tool_failure: bool = False         # lookup_vulnerability or environment_search failed, no cache
+    fact_validation_failed: bool = False        # extracted facts failed code validation twice (workflow table)
 
     # Confidence
     any_tool_failed: bool = False               # any tool call ended in status=failed
@@ -90,6 +92,8 @@ class PolicyInputs:
 def gate_1(inp: PolicyInputs) -> tuple[str, str]:
     """Return (applicability_status, gate_1_outcome)."""
     values = set(inp.conditions.values())
+    if inp.fact_validation_failed:
+        return "Unknown", "P-RV-F"
     if "false" in values:
         return "Not Applicable", "P-NA"
     if inp.decisive_tool_failure:
@@ -208,6 +212,8 @@ def confidence(inp: PolicyInputs, outcome: str, lk: Optional[dict]) -> dict:
         reasons.append("a decisive applicability fact is unknown")
     elif outcome == "P-RV-C":
         reasons.append("sources conflict on a decisive applicability fact")
+    elif outcome == "P-RV-F" and inp.fact_validation_failed:
+        reasons.append("the extracted facts failed code validation twice")
     elif outcome == "P-RV-F":
         reasons.append("a required lookup failed with no cached fallback")
     low = bool(reasons)

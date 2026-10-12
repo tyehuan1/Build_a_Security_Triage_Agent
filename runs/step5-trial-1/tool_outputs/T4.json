@@ -1,0 +1,67 @@
+{
+  "call_id": "T4",
+  "tool": "environment_search",
+  "selected_by": "model",
+  "model_call_id": "call_w1yzzpml",
+  "arguments": {
+    "query": "W01",
+    "query_type": "business_service"
+  },
+  "started_at": "2026-10-11T21:40:00-04:00",
+  "finished_at": "2026-10-11T21:40:00-04:00",
+  "status": "found",
+  "error": null,
+  "result": {
+    "status": "found",
+    "query_type": "business_service",
+    "query": "W01",
+    "records": [
+      {
+        "record_type": "business_service",
+        "record_id": "BS01",
+        "locator": "business_services[service_id=BS01]",
+        "basis": "inferred",
+        "evidence_ids": [
+          "S05"
+        ],
+        "matched_on": [
+          "supporting_assets[0]: W01"
+        ],
+        "unknown_fields": [],
+        "data": {
+          "service_id": "BS01",
+          "name": "Identity and privileged management",
+          "consequence": "Loss of authentication, unauthorized identity changes or broad privileged access",
+          "rto_hours": 4,
+          "rpo_hours": 4,
+          "scope": "Identity outage can block new logins across 1,000 staff; existing sessions may continue temporarily.",
+          "supporting_assets": [
+            "W01",
+            "W02",
+            "W03",
+            "W08",
+            "E03",
+            "C01"
+          ],
+          "supporting_assets_basis": "inferred",
+          "recovery_notes": "Restore exercise did not cover complete forest recovery.",
+          "evidence_ids": [
+            "S05"
+          ],
+          "source_locator": "Evidence controls and business impact, service table row 1"
+        }
+      }
+    ],
+    "total_matches": 1,
+    "truncated": 0,
+    "coverage": null,
+    "source": "windows_enterprise_environment_json",
+    "url_or_path": "Resources/windows_enterprise_environment.json",
+    "retrieved_at": "2026-10-11T21:40:00-04:00",
+    "locator": "business_services[service_id=BS01]",
+    "mode": "simulated",
+    "conventions": "Unknown. Never treat null as a negative or a safe value."
+  },
+  "receipts": [],
+  "source_raw": {}
+}

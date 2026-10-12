@@ -5,10 +5,13 @@ import json
 from llm import LLMError, ModelReply, ToolCall, parse_json_reply
 
 
+_call_counter = iter(range(1, 10**9))
+
+
 def reply(content="", tool_calls=()):
-    """Build a ModelReply. tool_calls: [(name, arguments), ...]."""
-    return ModelReply(content=content, tool_calls=[ToolCall(id=f"call_{i}", name=n, arguments=a)
-                                                    for i, (n, a) in enumerate(tool_calls)])
+    """Build a ModelReply. tool_calls: [(name, arguments), ...]. Call IDs are unique across a test run."""
+    return ModelReply(content=content, tool_calls=[ToolCall(id=f"call_{next(_call_counter)}", name=n, arguments=a)
+                                                    for n, a in tool_calls])
 
 
 class ScriptedLLM:
@@ -21,6 +24,22 @@ class ScriptedLLM:
     def __init__(self, *script):
         self.script = list(script)
         self.requests = []
+        self.transcript_path = None
+
+    def attach(self, transcript_path):
+        """Use as llm_factory: writes a transcript in the same format as OllamaClient."""
+        self.transcript_path = transcript_path
+        return self
+
+    def _log(self, purpose, item):
+        if not self.transcript_path:
+            return
+        calls = [{"id": c.id, "name": c.name, "arguments": c.arguments, "id_generated": False}
+                 for c in getattr(item, "tool_calls", [])]
+        with open(self.transcript_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps({"index": len(self.requests), "purpose": purpose, "scripted": True,
+                                "response": {"content": getattr(item, "content", item)}, "parsed_tool_calls": calls},
+                               default=str) + "\n")
 
     def _next(self, kind, messages, **kw):
         self.requests.append({"kind": kind, "messages": [dict(m) for m in messages], **kw})
@@ -29,6 +48,7 @@ class ScriptedLLM:
         item = self.script.pop(0)
         if isinstance(item, Exception):
             raise item
+        self._log(kw.get("purpose", ""), item)
         return item
 
     def chat(self, messages, *, tools=None, format=None, purpose=""):

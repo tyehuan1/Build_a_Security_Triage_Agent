@@ -156,6 +156,58 @@ def check_raw_outputs(a: dict) -> list[str]:
     return problems
 
 
+def _is_agent_output(a: dict) -> bool:
+    return bool(a.get("run_metadata", {}).get("run_id"))
+
+
+def check_agent_artifacts(a: dict) -> list[str]:
+    """Agent-produced assessments must carry a raw output + SHA-256 for every call and a model transcript."""
+    if not _is_agent_output(a):
+        return []
+    problems = [f"{t['call_id']}: no raw_output_path / output_sha256" for t in a["tool_trace"]
+                if not t.get("raw_output_path") or not t.get("output_sha256")]
+    if not a["run_metadata"].get("transcript_path"):
+        problems.append("run_metadata.transcript_path is missing")
+    if not any(t["selected_by"] == "model" for t in a["tool_trace"]):
+        problems.append("no tool call was selected by the model")
+    return problems
+
+
+def check_model_tool_calls(a: dict) -> list[str]:
+    """Every model-selected trace entry matches a structured tool call in the model transcript, and
+    every structured tool call in the transcript is in the trace (or was rejected / refused).
+    This is what proves tool use was real: the model asked through the API and code executed it."""
+    rel = a.get("run_metadata", {}).get("transcript_path")
+    if not rel:
+        return []
+    p = Path(rel) if Path(rel).is_absolute() else ROOT / rel
+    if not p.is_file():
+        return [f"model transcript {rel} not found"]
+    requested = {}
+    for line in p.read_text(encoding="utf-8").splitlines():
+        for c in json.loads(line).get("parsed_tool_calls") or []:
+            requested[c["id"]] = c
+    problems = []
+    traced = set()
+    for t in a["tool_trace"]:
+        if t["selected_by"] != "model":
+            continue
+        mid = t.get("model_call_id")
+        traced.add(mid)
+        c = requested.get(mid)
+        if c is None:
+            problems.append(f"{t['call_id']}: model_call_id {mid!r} is not a structured tool call in the transcript")
+            continue
+        if c["name"] != t["tool"]:
+            problems.append(f"{t['call_id']}: transcript requested {c['name']!r}, trace ran {t['tool']!r}")
+        if isinstance(c["arguments"], dict) and "_raw" not in t["arguments"] and c["arguments"] != t["arguments"]:
+            problems.append(f"{t['call_id']}: arguments differ from the transcript request")
+    rm = a["run_metadata"]
+    accounted = traced | {r.get("model_call_id") for r in rm.get("rejected_tool_requests") or []} | set(rm.get("budget_refused_calls") or [])
+    problems += [f"transcript tool call {mid} ({c['name']}) has no trace entry" for mid, c in requested.items() if mid not in accounted]
+    return problems
+
+
 def check_kev_matches_tool(a: dict) -> list[str]:
     lk = a["rationale"].get("likelihood")
     if not lk:
@@ -197,6 +249,7 @@ def inputs_from_assessment(a: dict) -> PolicyInputs:
     kw = dict(
         conditions={c["id"]: c["result"] for c in r["applicability"]["conditions"]},
         decisive_tool_failure=not DECISIVE_TOOLS <= completed,
+        fact_validation_failed=a["run_metadata"].get("fact_validation", {}).get("passed") is False,
         any_tool_failed=any(t["result_status"] == "failed" for t in trace),
         assumptions_used=bool(a.get("assumptions")),
         cvss_metrics=parse_cvss_vector(vector) if vector else None,
@@ -288,6 +341,8 @@ def validate_assessment(a: dict, schema: dict) -> dict:
     _check(results, "Cached evidence has a fallback reason; environment evidence is labeled simulated", check_labels(a))
     _check(results, "Tool calls follow the tool contracts", check_tool_contracts(a))
     _check(results, "Raw tool outputs exist, match their SHA-256 and their trace entry", check_raw_outputs(a))
+    _check(results, "Agent run saved raw outputs and a transcript, with model-selected tool calls", check_agent_artifacts(a))
+    _check(results, "Trace tool calls match structured tool calls in the model transcript", check_model_tool_calls(a))
     _check(results, "kev_listed matches the lookup_kev result", check_kev_matches_tool(a))
     _check(results, "Exploitability CVSS fields match the CVSS vector", check_cvss_consistency(a))
     _check(results, "Review Needed for conflicting evidence lists the conflicts", check_conflicts(a))

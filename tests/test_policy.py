@@ -78,6 +78,12 @@ def test_decisive_tool_failure_is_review_needed():
     assert (r["decision"]["rating"], r["decision"]["policy_rule_applied"]) == ("Review Needed", "P-RV-F")
 
 
+def test_fact_validation_failure_is_review_needed_even_if_a_condition_is_false():
+    r = evaluate(baseline(conditions={"C1": "true", "C2": "false", "C3": "unknown"}, fact_validation_failed=True))
+    assert (r["decision"]["rating"], r["decision"]["policy_rule_applied"]) == ("Review Needed", "P-RV-F")
+    assert r["confidence"]["level"] == "Low"
+
+
 def test_confirmed_false_wins_over_tool_failure():
     r = evaluate(baseline(conditions={"C1": "true", "C2": "false", "C3": "unknown"}, decisive_tool_failure=True))
     assert r["decision"]["policy_rule_applied"] == "P-NA"
