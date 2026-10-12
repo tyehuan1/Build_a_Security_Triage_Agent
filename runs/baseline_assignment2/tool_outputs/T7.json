@@ -1,0 +1,147 @@
+{
+  "call_id": "T7",
+  "tool": "tavily_search",
+  "selected_by": "model",
+  "model_call_id": "call_5tie9m63",
+  "arguments": {
+    "allowed_domains": [
+      "msrc.microsoft.com",
+      "support.microsoft.com",
+      "learn.microsoft.com",
+      "cisa.gov",
+      "bleepingcomputer.com",
+      "rapid7.com",
+      "tenable.com"
+    ],
+    "max_results": 5,
+    "query": "CVE-2026-69730 exploit proof of concept vendor assessment patch"
+  },
+  "started_at": "2026-10-11T22:00:27-04:00",
+  "finished_at": "2026-10-11T22:00:28-04:00",
+  "status": "found",
+  "error": null,
+  "result": {
+    "status": "found",
+    "results": [
+      {
+        "title": "CVE-2026-69730 - Security Update Guide - Microsoft",
+        "url": "https://msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2026-69730",
+        "snippet": "This metric describes the conditions beyond the attacker’s control that must exist in order to exploit the vulnerability. Such conditions may require the collection of more information about the target or computational exceptions. The assessment of this metric excludes any requirements for user interaction in order to exploit the vulnerability. If a specific configuration is required for an attack to succeed, the Base metrics should be scored assuming the vulnerable component is in that [...] Official Fix\n\nA complete vendor solution is available. Either the vendor has issued an official patch, or an upgrade is available.\n\nReport Confidence [...] Use after free in Windows DNS allows an unauthorized attacker to execute code over a network.\n\n## Exploitability\n\nThe following table provides an exploitability assessment for this vulnerability at the time of original publication.\n\nPublicly disclosed No Exploited No Exploitability assessment Exploitation More Likely\n\n## FAQ\n\nHow could an attacker exploit this vulnerability?",
+        "published_date": null,
+        "score": 0.67243975
+      },
+      {
+        "title": "CVE-2026-69730 - Security Update Guide - Microsoft",
+        "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69730",
+        "snippet": "This metric describes the conditions beyond the attacker’s control that must exist in order to exploit the vulnerability. Such conditions may require the collection of more information about the target or computational exceptions. The assessment of this metric excludes any requirements for user interaction in order to exploit the vulnerability. If a specific configuration is required for an attack to succeed, the Base metrics should be scored assuming the vulnerable component is in that [...] Official Fix\n\nA complete vendor solution is available. Either the vendor has issued an official patch, or an upgrade is available.\n\nReport Confidence [...] Use after free in Windows DNS allows an unauthorized attacker to execute code over a network.\n\n## Exploitability\n\nThe following table provides an exploitability assessment for this vulnerability at the time of original publication.\n\nPublicly disclosed No Exploited No Exploitability assessment Exploitation More Likely\n\n## FAQ\n\nHow could an attacker exploit this vulnerability?",
+        "published_date": null,
+        "score": 0.67243975
+      },
+      {
+        "title": "Mitel MiCollab zero-day flaw gets proof-of-concept exploit",
+        "url": "https://bleepingcomputer.com/news/security/mitel-micollab-zero-day-flaw-gets-proof-of-concept-exploit",
+        "snippet": "Microsoft September 2026 Patch Tuesday fixes 966 flaws, 2 zero-days\n\nMagento StyleSmuggler zero-day exploited to deploy Linux backdoor [...] The latest vulnerability in the product was discovered by researchers at watchTowr, who, despite having reported to the vendor since August, it remains unfixed after 90 days of being disclosed and waiting for a patch. [...] Mitel MiCollab is an enterprise collaboration platform that consolidates various communication tools into a single application, offering voice and video calling, messaging, presence information, audio conferencing, mobility support, and team collaboration functionalities.\n\nIt's utilized by various organizations, including large corporations, small to medium-sized enterprises, and companies operating on a remote or hybrid workforce model.",
+        "published_date": null,
+        "score": 0.52451706
+      },
+      {
+        "title": "Mitel MiCollab zero-day flaw gets proof-of-concept exploit",
+        "url": "https://www.bleepingcomputer.com/news/security/mitel-micollab-zero-day-flaw-gets-proof-of-concept-exploit",
+        "snippet": "Microsoft September 2026 Patch Tuesday fixes 966 flaws, 2 zero-days\n\nMagento StyleSmuggler zero-day exploited to deploy Linux backdoor [...] The latest vulnerability in the product was discovered by researchers at watchTowr, who, despite having reported to the vendor since August, it remains unfixed after 90 days of being disclosed and waiting for a patch. [...] Mitel MiCollab is an enterprise collaboration platform that consolidates various communication tools into a single application, offering voice and video calling, messaging, presence information, audio conferencing, mobility support, and team collaboration functionalities.\n\nIt's utilized by various organizations, including large corporations, small to medium-sized enterprises, and companies operating on a remote or hybrid workforce model.",
+        "published_date": null,
+        "score": 0.52451706
+      },
+      {
+        "title": "CVE-2020-6207: Proof of Concept Available for Missing Authentication Vulnerability in SAP Solution Manager - Blog | Tenable®",
+        "url": "https://es-la.tenable.com/blog/cve-2020-6207-proof-of-concept-missing-authentication-check-sap-solution-manager",
+        "snippet": "Sep 27 2026\n\n#### Frequently asked questions about reported Citrix NetScaler zero-day…\n\nBy Satnam Narang\n\nCyber Exposure Alerts\n\nOracle September 2026 Critical Security Patch Update addresses 672 CVEs image\n\nSep 15 2026\n\n#### Oracle September 2026 Critical Security Patch Update addresses 672 CVEs\n\nBy Research Special Operations\n\nCyber Exposure Alerts\n\nMicrosoft’s September 2026 Patch Tuesday addresses 964 CVEs (CVE-2026-81963,… image\n\nSep 8 2026 [...] Sep 8 2026\n\n#### Microsoft’s September 2026 Patch Tuesday addresses 964 CVEs (CVE-2026-81963,…\n\nBy Research Special Operations\n\n Vulnerability Management\n\nTenable One\n\n#### Request a demo\n\nThe world’s leading AI-powered exposure management platform.\n\n##### Thank You\n\nThank you for your interest in Tenable One.   \nA representative will be in touch soon.",
+        "published_date": null,
+        "score": 0.27032956
+      }
+    ],
+    "query": "CVE-2026-69730 exploit proof of concept vendor assessment patch",
+    "allowed_domains": [
+      "msrc.microsoft.com",
+      "support.microsoft.com",
+      "learn.microsoft.com",
+      "cisa.gov",
+      "bleepingcomputer.com",
+      "rapid7.com",
+      "tenable.com"
+    ],
+    "retrieved_at": "2026-10-11T22:00:28-04:00",
+    "mode": "live",
+    "request_id": "3a90b01d-0c84-47ab-ac55-0807d13480cb",
+    "dropped_off_allowlist": 0
+  },
+  "receipts": [
+    {
+      "source": "tavily",
+      "status": "ok",
+      "mode": "live",
+      "url": "https://api.tavily.com/search",
+      "retrieved_at": "2026-10-11T22:00:28-04:00",
+      "attempts": 1,
+      "fallback_reason": null,
+      "error": null,
+      "http_status": 200,
+      "final_url": "https://api.tavily.com/search",
+      "bytes": 6035,
+      "sha256": "dad4b7086dc3c1cc899c8420d0ed48da0e7bfb7e4db6c345a0f67a28987b366e",
+      "elapsed_ms": 516,
+      "request_id": "3a90b01d-0c84-47ab-ac55-0807d13480cb"
+    }
+  ],
+  "source_raw": {
+    "tavily": {
+      "query": "CVE-2026-69730 exploit proof of concept vendor assessment patch",
+      "follow_up_questions": null,
+      "answer": null,
+      "images": [],
+      "results": [
+        {
+          "url": "https://msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2026-69730",
+          "title": "CVE-2026-69730 - Security Update Guide - Microsoft",
+          "content": "This metric describes the conditions beyond the attacker’s control that must exist in order to exploit the vulnerability. Such conditions may require the collection of more information about the target or computational exceptions. The assessment of this metric excludes any requirements for user interaction in order to exploit the vulnerability. If a specific configuration is required for an attack to succeed, the Base metrics should be scored assuming the vulnerable component is in that [...] Official Fix\n\nA complete vendor solution is available. Either the vendor has issued an official patch, or an upgrade is available.\n\nReport Confidence [...] Use after free in Windows DNS allows an unauthorized attacker to execute code over a network.\n\n## Exploitability\n\nThe following table provides an exploitability assessment for this vulnerability at the time of original publication.\n\nPublicly disclosed No Exploited No Exploitability assessment Exploitation More Likely\n\n## FAQ\n\nHow could an attacker exploit this vulnerability?",
+          "score": 0.67243975,
+          "raw_content": null,
+          "id": "343209-00"
+        },
+        {
+          "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69730",
+          "title": "CVE-2026-69730 - Security Update Guide - Microsoft",
+          "content": "This metric describes the conditions beyond the attacker’s control that must exist in order to exploit the vulnerability. Such conditions may require the collection of more information about the target or computational exceptions. The assessment of this metric excludes any requirements for user interaction in order to exploit the vulnerability. If a specific configuration is required for an attack to succeed, the Base metrics should be scored assuming the vulnerable component is in that [...] Official Fix\n\nA complete vendor solution is available. Either the vendor has issued an official patch, or an upgrade is available.\n\nReport Confidence [...] Use after free in Windows DNS allows an unauthorized attacker to execute code over a network.\n\n## Exploitability\n\nThe following table provides an exploitability assessment for this vulnerability at the time of original publication.\n\nPublicly disclosed No Exploited No Exploitability assessment Exploitation More Likely\n\n## FAQ\n\nHow could an attacker exploit this vulnerability?",
+          "score": 0.67243975,
+          "raw_content": null,
+          "id": "29e8d2-01"
+        },
+        {
+          "url": "https://bleepingcomputer.com/news/security/mitel-micollab-zero-day-flaw-gets-proof-of-concept-exploit",
+          "title": "Mitel MiCollab zero-day flaw gets proof-of-concept exploit",
+          "content": "Microsoft September 2026 Patch Tuesday fixes 966 flaws, 2 zero-days\n\nMagento StyleSmuggler zero-day exploited to deploy Linux backdoor [...] The latest vulnerability in the product was discovered by researchers at watchTowr, who, despite having reported to the vendor since August, it remains unfixed after 90 days of being disclosed and waiting for a patch. [...] Mitel MiCollab is an enterprise collaboration platform that consolidates various communication tools into a single application, offering voice and video calling, messaging, presence information, audio conferencing, mobility support, and team collaboration functionalities.\n\nIt's utilized by various organizations, including large corporations, small to medium-sized enterprises, and companies operating on a remote or hybrid workforce model.",
+          "score": 0.52451706,
+          "raw_content": null,
+          "id": "a454ab-02"
+        },
+        {
+          "url": "https://www.bleepingcomputer.com/news/security/mitel-micollab-zero-day-flaw-gets-proof-of-concept-exploit",
+          "title": "Mitel MiCollab zero-day flaw gets proof-of-concept exploit",
+          "content": "Microsoft September 2026 Patch Tuesday fixes 966 flaws, 2 zero-days\n\nMagento StyleSmuggler zero-day exploited to deploy Linux backdoor [...] The latest vulnerability in the product was discovered by researchers at watchTowr, who, despite having reported to the vendor since August, it remains unfixed after 90 days of being disclosed and waiting for a patch. [...] Mitel MiCollab is an enterprise collaboration platform that consolidates various communication tools into a single application, offering voice and video calling, messaging, presence information, audio conferencing, mobility support, and team collaboration functionalities.\n\nIt's utilized by various organizations, including large corporations, small to medium-sized enterprises, and companies operating on a remote or hybrid workforce model.",
+          "score": 0.52451706,
+          "raw_content": null,
+          "id": "eb57e7-03"
+        },
+        {
+          "url": "https://es-la.tenable.com/blog/cve-2020-6207-proof-of-concept-missing-authentication-check-sap-solution-manager",
+          "title": "CVE-2020-6207: Proof of Concept Available for Missing Authentication Vulnerability in SAP Solution Manager - Blog | Tenable®",
+          "content": "Sep 27 2026\n\n#### Frequently asked questions about reported Citrix NetScaler zero-day…\n\nBy Satnam Narang\n\nCyber Exposure Alerts\n\nOracle September 2026 Critical Security Patch Update addresses 672 CVEs image\n\nSep 15 2026\n\n#### Oracle September 2026 Critical Security Patch Update addresses 672 CVEs\n\nBy Research Special Operations\n\nCyber Exposure Alerts\n\nMicrosoft’s September 2026 Patch Tuesday addresses 964 CVEs (CVE-2026-81963,… image\n\nSep 8 2026 [...] Sep 8 2026\n\n#### Microsoft’s September 2026 Patch Tuesday addresses 964 CVEs (CVE-2026-81963,…\n\nBy Research Special Operations\n\n Vulnerability Management\n\nTenable One\n\n#### Request a demo\n\nThe world’s leading AI-powered exposure management platform.\n\n##### Thank You\n\nThank you for your interest in Tenable One.   \nA representative will be in touch soon.",
+          "score": 0.27032956,
+          "raw_content": null,
+          "id": "883612-04"
+        }
+      ],
+      "response_time": 0.0,
+      "request_id": "3a90b01d-0c84-47ab-ac55-0807d13480cb"
+    }
+  }
+}

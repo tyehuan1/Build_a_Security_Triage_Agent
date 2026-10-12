@@ -1,0 +1,949 @@
+{
+  "call_id": "T1",
+  "tool": "lookup_vulnerability",
+  "selected_by": "model",
+  "model_call_id": "call_51y1dt8s",
+  "arguments": {
+    "cve_id": "CVE-2026-69730"
+  },
+  "started_at": "2026-10-11T22:00:26-04:00",
+  "finished_at": "2026-10-11T22:00:27-04:00",
+  "status": "found",
+  "error": null,
+  "result": {
+    "status": "found",
+    "cve_id": "CVE-2026-69730",
+    "title": "Windows DNS Server Remote Code Execution Vulnerability",
+    "description": "Use after free in Windows DNS allows an unauthorized attacker to execute code over a network.",
+    "cwe": [
+      "CWE-416"
+    ],
+    "nvd_status": "Analyzed",
+    "cvss": {
+      "version": "3.1",
+      "base_score": 9.8,
+      "base_severity": "Critical",
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H/E:U/RL:O/RC:C",
+      "source": "microsoft (CNA) via CVE record",
+      "locator": "cve:containers.cna.metrics[0].cvssV3_1",
+      "metrics": {
+        "AV": "N",
+        "AC": "L",
+        "PR": "N",
+        "UI": "N",
+        "S": "U",
+        "C": "H",
+        "I": "H",
+        "A": "H"
+      },
+      "temporal": {
+        "exploit_code_maturity": "U",
+        "remediation_level": "O",
+        "report_confidence": "C"
+      }
+    },
+    "affected": [
+      {
+        "product": "Windows 10 Version 1607",
+        "version_start": "10.0.14393.0",
+        "fixed_build": "10.0.14393.9512"
+      },
+      {
+        "product": "Windows 10 Version 1809",
+        "version_start": "10.0.17763.0",
+        "fixed_build": "10.0.17763.9245"
+      },
+      {
+        "product": "Windows Server 2012",
+        "version_start": "6.2.9200.0",
+        "fixed_build": "6.2.9200.26349"
+      },
+      {
+        "product": "Windows Server 2012 (Server Core installation)",
+        "version_start": "6.2.9200.0",
+        "fixed_build": "6.2.9200.26349"
+      },
+      {
+        "product": "Windows Server 2012 R2",
+        "version_start": "6.3.9600.0",
+        "fixed_build": "6.3.9600.23398"
+      },
+      {
+        "product": "Windows Server 2012 R2 (Server Core installation)",
+        "version_start": "6.3.9600.0",
+        "fixed_build": "6.3.9600.23398"
+      },
+      {
+        "product": "Windows Server 2016",
+        "version_start": "10.0.14393.0",
+        "fixed_build": "10.0.14393.9512"
+      },
+      {
+        "product": "Windows Server 2016 (Server Core installation)",
+        "version_start": "10.0.14393.0",
+        "fixed_build": "10.0.14393.9512"
+      },
+      {
+        "product": "Windows Server 2019",
+        "version_start": "10.0.17763.0",
+        "fixed_build": "10.0.17763.9245"
+      },
+      {
+        "product": "Windows Server 2019 (Server Core installation)",
+        "version_start": "10.0.17763.0",
+        "fixed_build": "10.0.17763.9245"
+      },
+      {
+        "product": "Windows Server 2022",
+        "version_start": "10.0.20348.0",
+        "fixed_build": "10.0.20348.5622"
+      },
+      {
+        "product": "Windows Server 2025",
+        "version_start": "10.0.26100.0",
+        "fixed_build": "10.0.26100.33438"
+      },
+      {
+        "product": "Windows Server 2025 (Server Core installation)",
+        "version_start": "10.0.26100.0",
+        "fixed_build": "10.0.26100.33438"
+      }
+    ],
+    "ssvc": {
+      "source": "CISA ADP Vulnrichment",
+      "timestamp": "2026-09-09T00:00:00+00:00",
+      "Exploitation": "none",
+      "Automatable": "yes",
+      "Technical Impact": "total"
+    },
+    "dates": {
+      "cve_published": "2026-09-08",
+      "cve_last_modified": "2026-10-08",
+      "nvd_published": "2026-09-08",
+      "nvd_last_modified": "2026-09-24"
+    },
+    "references": [
+      "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69730"
+    ],
+    "conflicts": [],
+    "notes": [],
+    "sources": [
+      {
+        "name": "CVE",
+        "url": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+        "retrieved_at": "2026-10-11T22:00:26-04:00",
+        "mode": "live",
+        "status": "ok",
+        "fallback_reason": null
+      },
+      {
+        "name": "NVD",
+        "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2026-69730",
+        "retrieved_at": "2026-10-11T22:00:27-04:00",
+        "mode": "live",
+        "status": "ok",
+        "fallback_reason": null
+      }
+    ],
+    "locators": {
+      "description": "cve:containers.cna.descriptions[0]",
+      "cvss": "cve:containers.cna.metrics[0].cvssV3_1",
+      "affected": "cve:containers.cna.affected[product=...].versions[0]",
+      "ssvc": "cve:containers.adp[title='CISA ADP Vulnrichment'].metrics[0].other"
+    }
+  },
+  "receipts": [
+    {
+      "source": "cve",
+      "status": "ok",
+      "mode": "live",
+      "url": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-11T22:00:26-04:00",
+      "attempts": 1,
+      "fallback_reason": null,
+      "error": null,
+      "http_status": 200,
+      "final_url": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "bytes": 6740,
+      "sha256": "6583e4e985a8f97cf57ba5ee81ce5d42ba9f5c6831e699317978ef20577e160d",
+      "elapsed_ms": 641
+    },
+    {
+      "source": "nvd",
+      "status": "ok",
+      "mode": "live",
+      "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2026-69730",
+      "retrieved_at": "2026-10-11T22:00:27-04:00",
+      "attempts": 1,
+      "fallback_reason": null,
+      "error": null,
+      "http_status": 200,
+      "final_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2026-69730",
+      "bytes": 6183,
+      "sha256": "5af598a156636bc8258cd0feeaebc0621472aee584eb049a25fe09864b5d88ab",
+      "elapsed_ms": 530
+    }
+  ],
+  "source_raw": {
+    "cve": {
+      "dataType": "CVE_RECORD",
+      "dataVersion": "5.2",
+      "cveMetadata": {
+        "cveId": "CVE-2026-69730",
+        "assignerOrgId": "f38d906d-7342-40ea-92c1-6c4a2c6478c8",
+        "state": "PUBLISHED",
+        "assignerShortName": "microsoft",
+        "dateReserved": "2026-08-03T21:35:55.264Z",
+        "datePublished": "2026-09-08T17:12:13.478Z",
+        "dateUpdated": "2026-10-08T18:13:44.329Z"
+      },
+      "containers": {
+        "cna": {
+          "title": "Windows DNS Server Remote Code Execution Vulnerability",
+          "datePublic": "2026-09-08T14:00:00.000Z",
+          "cpeApplicability": [
+            {
+              "nodes": [
+                {
+                  "operator": "OR",
+                  "negate": false,
+                  "cpeMatch": [
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_10_1809:*:*:*:*:*:*:x86:*",
+                      "versionStartIncluding": "10.0.17763.0",
+                      "versionEndExcluding": "10.0.17763.9245"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_server_2019:*:*:*:*:*:*:*:*",
+                      "versionStartIncluding": "10.0.17763.0",
+                      "versionEndExcluding": "10.0.17763.9245"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_server_2019:*:*:*:*:*:*:*:*",
+                      "versionStartIncluding": "10.0.17763.0",
+                      "versionEndExcluding": "10.0.17763.9245"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*",
+                      "versionStartIncluding": "10.0.20348.0",
+                      "versionEndExcluding": "10.0.20348.5622"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_server_2025:*:*:*:*:*:*:*:*",
+                      "versionStartIncluding": "10.0.26100.0",
+                      "versionEndExcluding": "10.0.26100.33438"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_server_2025:*:*:*:*:*:*:*:*",
+                      "versionStartIncluding": "10.0.26100.0",
+                      "versionEndExcluding": "10.0.26100.33438"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_10_1607:*:*:*:*:*:*:x86:*",
+                      "versionStartIncluding": "10.0.14393.0",
+                      "versionEndExcluding": "10.0.14393.9512"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_server_2016:*:*:*:*:*:*:*:*",
+                      "versionStartIncluding": "10.0.14393.0",
+                      "versionEndExcluding": "10.0.14393.9512"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_server_2016:*:*:*:*:*:*:*:*",
+                      "versionStartIncluding": "10.0.14393.0",
+                      "versionEndExcluding": "10.0.14393.9512"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_server_2012:*:*:*:*:*:*:x64:*",
+                      "versionStartIncluding": "6.2.9200.0",
+                      "versionEndExcluding": "6.2.9200.26349"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_server_2012:*:*:*:*:*:*:x64:*",
+                      "versionStartIncluding": "6.2.9200.0",
+                      "versionEndExcluding": "6.2.9200.26349"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_server_2012_R2:*:*:*:*:*:*:x64:*",
+                      "versionStartIncluding": "6.3.9600.0",
+                      "versionEndExcluding": "6.3.9600.23398"
+                    },
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:o:microsoft:windows_server_2012_R2:*:*:*:*:*:*:x64:*",
+                      "versionStartIncluding": "6.3.9600.0",
+                      "versionEndExcluding": "6.3.9600.23398"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "affected": [
+            {
+              "vendor": "Microsoft",
+              "product": "Windows 10 Version 1607",
+              "platforms": [
+                "32-bit Systems",
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "10.0.14393.0",
+                  "lessThan": "10.0.14393.9512",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows 10 Version 1809",
+              "platforms": [
+                "32-bit Systems",
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "10.0.17763.0",
+                  "lessThan": "10.0.17763.9245",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows Server 2012",
+              "platforms": [
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "6.2.9200.0",
+                  "lessThan": "6.2.9200.26349",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows Server 2012 (Server Core installation)",
+              "platforms": [
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "6.2.9200.0",
+                  "lessThan": "6.2.9200.26349",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows Server 2012 R2",
+              "platforms": [
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "6.3.9600.0",
+                  "lessThan": "6.3.9600.23398",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows Server 2012 R2 (Server Core installation)",
+              "platforms": [
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "6.3.9600.0",
+                  "lessThan": "6.3.9600.23398",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows Server 2016",
+              "platforms": [
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "10.0.14393.0",
+                  "lessThan": "10.0.14393.9512",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows Server 2016 (Server Core installation)",
+              "platforms": [
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "10.0.14393.0",
+                  "lessThan": "10.0.14393.9512",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows Server 2019",
+              "platforms": [
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "10.0.17763.0",
+                  "lessThan": "10.0.17763.9245",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows Server 2019 (Server Core installation)",
+              "platforms": [
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "10.0.17763.0",
+                  "lessThan": "10.0.17763.9245",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows Server 2022",
+              "platforms": [
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "10.0.20348.0",
+                  "lessThan": "10.0.20348.5622",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows Server 2025",
+              "platforms": [
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "10.0.26100.0",
+                  "lessThan": "10.0.26100.33438",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            },
+            {
+              "vendor": "Microsoft",
+              "product": "Windows Server 2025 (Server Core installation)",
+              "platforms": [
+                "x64-based Systems"
+              ],
+              "versions": [
+                {
+                  "version": "10.0.26100.0",
+                  "lessThan": "10.0.26100.33438",
+                  "versionType": "custom",
+                  "status": "affected"
+                }
+              ]
+            }
+          ],
+          "descriptions": [
+            {
+              "value": "Use after free in Windows DNS allows an unauthorized attacker to execute code over a network.",
+              "lang": "en-US"
+            }
+          ],
+          "problemTypes": [
+            {
+              "descriptions": [
+                {
+                  "description": "CWE-416: Use After Free",
+                  "lang": "en-US",
+                  "type": "CWE",
+                  "cweId": "CWE-416"
+                }
+              ]
+            }
+          ],
+          "providerMetadata": {
+            "orgId": "f38d906d-7342-40ea-92c1-6c4a2c6478c8",
+            "shortName": "microsoft",
+            "dateUpdated": "2026-10-08T18:13:44.329Z"
+          },
+          "references": [
+            {
+              "name": "Windows DNS Server Remote Code Execution Vulnerability",
+              "tags": [
+                "vendor-advisory",
+                "patch"
+              ],
+              "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69730"
+            }
+          ],
+          "metrics": [
+            {
+              "format": "CVSS",
+              "scenarios": [
+                {
+                  "lang": "en-US",
+                  "value": "GENERAL"
+                }
+              ],
+              "cvssV3_1": {
+                "version": "3.1",
+                "baseSeverity": "CRITICAL",
+                "baseScore": 9.8,
+                "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H/E:U/RL:O/RC:C"
+              }
+            }
+          ]
+        },
+        "adp": [
+          {
+            "metrics": [
+              {
+                "other": {
+                  "type": "ssvc",
+                  "content": {
+                    "timestamp": "2026-09-09T00:00:00+00:00",
+                    "options": [
+                      {
+                        "Exploitation": "none"
+                      },
+                      {
+                        "Automatable": "yes"
+                      },
+                      {
+                        "Technical Impact": "total"
+                      }
+                    ],
+                    "role": "CISA Coordinator",
+                    "version": "2.0.3",
+                    "id": "CVE-2026-69730"
+                  }
+                }
+              }
+            ],
+            "title": "CISA ADP Vulnrichment",
+            "providerMetadata": {
+              "orgId": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+              "shortName": "CISA-ADP",
+              "dateUpdated": "2026-09-10T03:56:27.208Z"
+            }
+          }
+        ]
+      }
+    },
+    "nvd": {
+      "resultsPerPage": 1,
+      "startIndex": 0,
+      "totalResults": 1,
+      "format": "NVD_CVE",
+      "version": "2.0",
+      "timestamp": "2026-10-12T02:00:27.021",
+      "vulnerabilities": [
+        {
+          "cve": {
+            "id": "CVE-2026-69730",
+            "sourceIdentifier": "secure@microsoft.com",
+            "published": "2026-09-08T18:19:45.140",
+            "lastModified": "2026-09-24T23:18:23.210",
+            "vulnStatus": "Analyzed",
+            "cveTags": [],
+            "descriptions": [
+              {
+                "lang": "en",
+                "value": "Use after free in Windows DNS allows an unauthorized attacker to execute code over a network."
+              }
+            ],
+            "affected": [
+              {
+                "source": "secure@microsoft.com",
+                "affectedData": [
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows 10 Version 1607",
+                    "platforms": [
+                      "32-bit Systems",
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "10.0.14393.0",
+                        "lessThan": "10.0.14393.9512",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows 10 Version 1809",
+                    "platforms": [
+                      "32-bit Systems",
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "10.0.17763.0",
+                        "lessThan": "10.0.17763.9245",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows Server 2012",
+                    "platforms": [
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "6.2.9200.0",
+                        "lessThan": "6.2.9200.26349",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows Server 2012 (Server Core installation)",
+                    "platforms": [
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "6.2.9200.0",
+                        "lessThan": "6.2.9200.26349",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows Server 2012 R2",
+                    "platforms": [
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "6.3.9600.0",
+                        "lessThan": "6.3.9600.23398",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows Server 2012 R2 (Server Core installation)",
+                    "platforms": [
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "6.3.9600.0",
+                        "lessThan": "6.3.9600.23398",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows Server 2016",
+                    "platforms": [
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "10.0.14393.0",
+                        "lessThan": "10.0.14393.9512",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows Server 2016 (Server Core installation)",
+                    "platforms": [
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "10.0.14393.0",
+                        "lessThan": "10.0.14393.9512",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows Server 2019",
+                    "platforms": [
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "10.0.17763.0",
+                        "lessThan": "10.0.17763.9245",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows Server 2019 (Server Core installation)",
+                    "platforms": [
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "10.0.17763.0",
+                        "lessThan": "10.0.17763.9245",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows Server 2022",
+                    "platforms": [
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "10.0.20348.0",
+                        "lessThan": "10.0.20348.5622",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows Server 2025",
+                    "platforms": [
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "10.0.26100.0",
+                        "lessThan": "10.0.26100.33438",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  },
+                  {
+                    "vendor": "Microsoft",
+                    "product": "Windows Server 2025 (Server Core installation)",
+                    "platforms": [
+                      "x64-based Systems"
+                    ],
+                    "versions": [
+                      {
+                        "version": "10.0.26100.0",
+                        "lessThan": "10.0.26100.33438",
+                        "versionType": "custom",
+                        "status": "affected"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "metrics": {
+              "cvssMetricV31": [
+                {
+                  "source": "secure@microsoft.com",
+                  "type": "Secondary",
+                  "cvssData": {
+                    "version": "3.1",
+                    "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "baseScore": 9.8,
+                    "baseSeverity": "CRITICAL",
+                    "attackVector": "NETWORK",
+                    "attackComplexity": "LOW",
+                    "privilegesRequired": "NONE",
+                    "userInteraction": "NONE",
+                    "scope": "UNCHANGED",
+                    "confidentialityImpact": "HIGH",
+                    "integrityImpact": "HIGH",
+                    "availabilityImpact": "HIGH"
+                  },
+                  "exploitabilityScore": 3.9,
+                  "impactScore": 5.9
+                }
+              ],
+              "ssvcV203": [
+                {
+                  "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                  "ssvcData": {
+                    "timestamp": "2026-09-09T00:00:00+00:00",
+                    "id": "CVE-2026-69730",
+                    "options": [
+                      {
+                        "exploitation": "none"
+                      },
+                      {
+                        "automatable": "yes"
+                      },
+                      {
+                        "technicalImpact": "total"
+                      }
+                    ],
+                    "role": "CISA Coordinator",
+                    "version": "2.0.3"
+                  }
+                }
+              ]
+            },
+            "weaknesses": [
+              {
+                "source": "secure@microsoft.com",
+                "type": "Secondary",
+                "description": [
+                  {
+                    "lang": "en",
+                    "value": "CWE-416"
+                  }
+                ]
+              }
+            ],
+            "configurations": [
+              {
+                "nodes": [
+                  {
+                    "operator": "OR",
+                    "negate": false,
+                    "cpeMatch": [
+                      {
+                        "vulnerable": true,
+                        "criteria": "cpe:2.3:o:microsoft:windows_10_1607:*:*:*:*:*:*:x64:*",
+                        "versionEndExcluding": "10.0.14393.9512",
+                        "matchCriteriaId": "F5BC051B-C14F-43DF-B3A2-A32EE0DDC142"
+                      },
+                      {
+                        "vulnerable": true,
+                        "criteria": "cpe:2.3:o:microsoft:windows_10_1607:*:*:*:*:*:*:x86:*",
+                        "versionEndExcluding": "10.0.14393.9512",
+                        "matchCriteriaId": "D8DA8FA6-35F6-4E0F-A9C0-37CB88186C5B"
+                      },
+                      {
+                        "vulnerable": true,
+                        "criteria": "cpe:2.3:o:microsoft:windows_10_1809:*:*:*:*:*:*:x64:*",
+                        "versionEndExcluding": "10.0.17763.9245",
+                        "matchCriteriaId": "81786843-7838-4C74-AEA6-E64B6B354387"
+                      },
+                      {
+                        "vulnerable": true,
+                        "criteria": "cpe:2.3:o:microsoft:windows_10_1809:*:*:*:*:*:*:x86:*",
+                        "versionEndExcluding": "10.0.17763.9245",
+                        "matchCriteriaId": "D5E29D31-09E1-4C19-AAB0-191AA960C778"
+                      },
+                      {
+                        "vulnerable": true,
+                        "criteria": "cpe:2.3:o:microsoft:windows_server_2012:-:*:*:*:*:*:*:*",
+                        "matchCriteriaId": "A7DF96F8-BA6A-4780-9CA3-F719B3F81074"
+                      },
+                      {
+                        "vulnerable": true,
+                        "criteria": "cpe:2.3:o:microsoft:windows_server_2012:r2:*:*:*:*:*:*:*",
+                        "matchCriteriaId": "DB18C4CE-5917-401E-ACF7-2747084FD36E"
+                      },
+                      {
+                        "vulnerable": true,
+                        "criteria": "cpe:2.3:o:microsoft:windows_server_2016:*:*:*:*:*:*:*:*",
+                        "versionEndExcluding": "10.0.14393.9512",
+                        "matchCriteriaId": "C7CF508B-369A-4854-97BF-EE90E0A5BF7B"
+                      },
+                      {
+                        "vulnerable": true,
+                        "criteria": "cpe:2.3:o:microsoft:windows_server_2019:*:*:*:*:*:*:*:*",
+                        "versionEndExcluding": "10.0.17763.9245",
+                        "matchCriteriaId": "14138B1B-9554-4B1D-84C6-485FB9763DA4"
+                      },
+                      {
+                        "vulnerable": true,
+                        "criteria": "cpe:2.3:o:microsoft:windows_server_2022:*:*:*:*:*:*:*:*",
+                        "versionEndExcluding": "10.0.20348.5622",
+                        "matchCriteriaId": "496A12F9-40BF-4A40-948B-BDB1C5D17DCB"
+                      },
+                      {
+                        "vulnerable": true,
+                        "criteria": "cpe:2.3:o:microsoft:windows_server_2025:*:*:*:*:*:*:*:*",
+                        "versionEndExcluding": "10.0.26100.33438",
+                        "matchCriteriaId": "48D75543-6B91-41E9-A1FB-1A09A2CBD738"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "references": [
+              {
+                "url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-69730",
+                "source": "secure@microsoft.com",
+                "tags": [
+                  "Patch",
+                  "Vendor Advisory"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

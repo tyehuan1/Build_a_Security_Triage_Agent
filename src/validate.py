@@ -208,6 +208,21 @@ def check_model_tool_calls(a: dict) -> list[str]:
     return problems
 
 
+def check_analyst_review(a: dict) -> list[str]:
+    """Pending is valid; a recorded review must follow 'approve or override with justification'."""
+    r = a["analyst_review"]
+    if r["status"] == "pending":
+        return []
+    problems = [f"analyst_review.{k} is required once reviewed" for k in ("reviewer", "reviewed_at") if not r.get(k)]
+    if r["status"] == "approved" and not (r.get("citations_verified") and r.get("agrees_with_rating")):
+        problems.append("approved requires citations_verified and agrees_with_rating to be true")
+    if r["status"] in ("changed", "rejected") and not (r.get("notes") or "").strip():
+        problems.append(f"{r['status']} requires notes justifying the override")
+    if r["status"] == "changed" and not r.get("group_consensus_rating"):
+        problems.append("changed requires group_consensus_rating")
+    return problems
+
+
 def check_kev_matches_tool(a: dict) -> list[str]:
     lk = a["rationale"].get("likelihood")
     if not lk:
@@ -347,6 +362,7 @@ def validate_assessment(a: dict, schema: dict) -> dict:
     _check(results, "Exploitability CVSS fields match the CVSS vector", check_cvss_consistency(a))
     _check(results, "Review Needed for conflicting evidence lists the conflicts", check_conflicts(a))
     _check(results, "Decision, scores, matrix and confidence match policy.py", check_policy(a))
+    _check(results, "Analyst review is pending or recorded with justification", check_analyst_review(a))
     return {"schema_valid": True, "checks": results}
 
 
