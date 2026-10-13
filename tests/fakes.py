@@ -36,7 +36,7 @@ class ScriptedLLM:
             return
         calls = [{"id": c.id, "name": c.name, "arguments": c.arguments, "id_generated": False}
                  for c in getattr(item, "tool_calls", [])]
-        with open(self.transcript_path, "a", encoding="utf-8") as f:
+        with open(self.transcript_path, "a", encoding="utf-8", newline="\n") as f:
             f.write(json.dumps({"index": len(self.requests), "purpose": purpose, "scripted": True,
                                 "response": {"content": getattr(item, "content", item)}, "parsed_tool_calls": calls},
                                default=str) + "\n")

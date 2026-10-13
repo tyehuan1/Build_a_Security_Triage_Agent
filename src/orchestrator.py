@@ -75,7 +75,7 @@ class RunLog:
         self.path = path
 
     def __call__(self, event: str, **data) -> None:
-        with self.path.open("a", encoding="utf-8") as f:
+        with self.path.open("a", encoding="utf-8", newline="\n") as f:
             f.write(json.dumps({"at": _now(), "event": event, **data}, ensure_ascii=False, default=str) + "\n")
 
 
@@ -107,7 +107,7 @@ def intake(settings: dict, run_dir: Path) -> tuple[dict, dict]:
     for label, p in (("threat_input", threat_path), ("environment_snapshot", env_path)):
         shutil.copy2(p, inputs_dir / p.name)
         saved[label] = {"source_path": _rel(p), "copy": _rel(inputs_dir / p.name), "sha256": _sha(p)}
-    (run_dir / "other_info" / "inputs.json").write_text(json.dumps(saved, indent=2), encoding="utf-8")
+    (run_dir / "other_info" / "inputs.json").write_text(json.dumps(saved, indent=2), encoding="utf-8", newline="\n")
 
     facts = {
         "risk_question": inp["risk_question"], "cve_id": inp["cve_id"], "asset_id": inp["asset_id"],
@@ -279,9 +279,9 @@ def run_assessment(settings: dict, *, llm_factory: Optional[Callable] = None, ru
     info.mkdir(parents=True, exist_ok=True)
     (run_dir / ".gitkeep").unlink(missing_ok=True)
     log = RunLog(info / "run_log.jsonl")
-    (info / "config.json").write_text(json.dumps(config.redacted(settings), indent=2), encoding="utf-8")
+    (info / "config.json").write_text(json.dumps(config.redacted(settings), indent=2), encoding="utf-8", newline="\n")
     (info / "prompts.json").write_text(json.dumps(prompts.prompt_bundle(settings["model"]["max_tool_rounds"]), indent=2),
-                                       encoding="utf-8")
+                                       encoding="utf-8", newline="\n")
     transcript = info / "model_transcript.jsonl"
     llm = (llm_factory or (lambda path: OllamaClient(settings, path)))(transcript)
     log("run_started", run_id=run_id, model=settings["model"]["name"],
@@ -331,7 +331,7 @@ def run_assessment(settings: dict, *, llm_factory: Optional[Callable] = None, ru
         assessment["validation"] = validate_assessment(assessment, schema)
         passed = assessment["validation"]["schema_valid"] and all(c["passed"] for c in assessment["validation"]["checks"])
         out = run_dir / "assessment.json"
-        out.write_text(json.dumps(assessment, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        out.write_text(json.dumps(assessment, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
         log("assessment_saved", path=_rel(out), validation_passed=passed)
         return {"status": "completed" if passed else "completed_invalid", "run_dir": run_dir, "assessment_path": out,
                 "assessment": assessment, "validation_passed": passed}
@@ -345,6 +345,6 @@ def run_assessment(settings: dict, *, llm_factory: Optional[Callable] = None, ru
                    "note": "Run stopped before an assessment could be assembled (design: intake failure or unrecoverable "
                            "step). Analyst review required."}
         out = run_dir / "run_failure.json"
-        out.write_text(json.dumps(failure, indent=2, ensure_ascii=False), encoding="utf-8")
+        out.write_text(json.dumps(failure, indent=2, ensure_ascii=False), encoding="utf-8", newline="\n")
         log("run_stopped", stage=stage, reason=reason)
         return {"status": "stopped", "stage": stage, "reason": reason, "run_dir": run_dir, "failure_path": out}

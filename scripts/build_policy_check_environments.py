@@ -100,7 +100,7 @@ def main() -> None:
     for build in (adjustment1, adjustment2, adjustment3):
         env = build(copy.deepcopy(base))
         path = OUT / f"{env['metadata']['variant']['id']}.json"
-        path.write_text(json.dumps(env, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        path.write_text(json.dumps(env, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
         print(f"wrote {path.relative_to(ROOT)}")
 
 

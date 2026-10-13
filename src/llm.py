@@ -101,7 +101,7 @@ class OllamaClient:
     def _log(self, entry: dict) -> None:
         if self.transcript_path:
             self.transcript_path.parent.mkdir(parents=True, exist_ok=True)
-            with self.transcript_path.open("a", encoding="utf-8") as f:
+            with self.transcript_path.open("a", encoding="utf-8", newline="\n") as f:
                 f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
     def chat(self, messages: list[dict], *, tools: Optional[list[dict]] = None, format: Optional[dict] = None,

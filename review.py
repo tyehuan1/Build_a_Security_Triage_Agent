@@ -202,7 +202,7 @@ def main() -> int:
     a = json.loads(args.assessment.read_text(encoding="utf-8"))
     sheet = args.assessment.parent / "other_info" / "review_sheet.md"
     sheet.parent.mkdir(exist_ok=True)
-    sheet.write_text(review_sheet(a), encoding="utf-8")
+    sheet.write_text(review_sheet(a), encoding="utf-8", newline="\n")
     print(f"Review sheet written: {sheet}")
     if args.sheet_only:
         return 0
@@ -223,7 +223,7 @@ def main() -> int:
 
     schema = json.loads(config.path("Resources/output_schema.json").read_text(encoding="utf-8"))
     a["validation"] = validate_assessment(a, schema)
-    args.assessment.write_text(json.dumps(a, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    args.assessment.write_text(json.dumps(a, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     failed = [c["check"] for c in a["validation"]["checks"] if not c["passed"]]
     print(f"Analyst review recorded ({a['analyst_review']['status']} by {a['analyst_review']['reviewer']}). "
           f"Validation: {'all checks pass' if not failed else 'FAILED: ' + '; '.join(failed)}")

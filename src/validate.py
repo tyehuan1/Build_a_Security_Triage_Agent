@@ -379,7 +379,7 @@ def main() -> int:
         print(f"[{'PASS' if c['passed'] else 'FAIL'}] {c['check']}" + ("" if c["passed"] else f"\n       {c['detail']}"))
     if args.write:
         a["validation"] = report
-        args.assessment.write_text(json.dumps(a, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        args.assessment.write_text(json.dumps(a, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     return 0 if all(c["passed"] for c in report["checks"]) else 1
 
 

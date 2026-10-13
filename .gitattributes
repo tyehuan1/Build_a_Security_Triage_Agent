@@ -1,0 +1,7 @@
+# The agent records SHA-256 hashes of cached sources, saved inputs and raw tool outputs and re-checks
+# them (cache_manifest.json, inputs.json, tool_trace.output_sha256). Line-ending conversion would
+# change those bytes, so data files are stored and checked out exactly as committed.
+*.json  -text
+*.jsonl -text
+*.pdf   binary
+*.docx  binary

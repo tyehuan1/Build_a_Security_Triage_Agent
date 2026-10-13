@@ -1,1 +1,0 @@
-The expected result from the baseline analysis

@@ -147,6 +147,8 @@ def test_complete_run_gives_insufficient_evidence_with_provisional_high(env_sett
     for name in ("config.json", "prompts.json", "inputs.json", "run_log.jsonl", "model_transcript.jsonl"):
         assert (run_dir / "other_info" / name).is_file(), name
     assert len(list((run_dir / "tool_outputs").glob("T*.json"))) == 7
+    # LF line endings on every OS, so saved bytes (and their SHA-256) survive git and cross-platform clones
+    assert not [p.name for p in run_dir.rglob("*.json*") if b"\r\n" in p.read_bytes()]
     # the model saw each tool result tagged with its call ID
     tool_msgs = [m for m in llm.requests[1]["messages"] if m["role"] == "tool"]
     assert [json.loads(m["content"])["call_id"] for m in tool_msgs] == ["T1", "T2", "T3"]
