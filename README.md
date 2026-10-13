@@ -22,7 +22,7 @@ The agent assesses **CVE-2026-69730** (unauthenticated remote code execution in 
 | `config/settings.json` | Non-secret configuration (model, inputs, source URLs, allowed domains, limits, fault switches) |
 | `Resources/` | Saved inputs: CVE record, environment snapshot (.docx and .json), output schema, cached NVD/KEV data with `cache_manifest.json` (SHA-256), source PDFs, policy-check environment variants |
 | `scripts/build_policy_check_environments.py` | Regenerates the policy-check environment variants |
-| `model_outputs_and_assessments/` | Saved runs (baseline and four policy checks) and the group's review and comparison documents |
+| `model_outputs_and_assessments/` | Saved runs (baseline and four policy checks) and the output review and comparison documents |
 | `tests/` | Offline unit and end-to-end tests (scripted model), plus optional live tests |
 
 ## Requirements
@@ -146,19 +146,6 @@ python run_assessment.py --run-id adj4 --fail cve --fail nvd --no-cache
 ```
 
 Other failure switches: `--fail kev`, `--fail tavily`, or `--fail cve --fail nvd` without `--no-cache` (falls back to the cache, labelled `cached`). A run ID must be a new folder name, or one of the empty placeholder folders; previous runs are never overwritten.
-
-## Analyst review
-
-```powershell
-# 1. Write the citation-checking sheet: each evidence item next to the value found at its locator in the saved tool output
-python review.py model_outputs_and_assessments/<run-id>/assessment.json --sheet-only
-#    -> model_outputs_and_assessments/<run-id>/other_info/review_sheet.md
-
-# 2. Record the verdict (interactive), or pass --reviewer --status --citations-verified --agrees --consensus --notes
-python review.py model_outputs_and_assessments/<run-id>/assessment.json
-```
-
-`approved` requires that the citations are verified and that the reviewer agrees with the rating. `changed` and `rejected` require notes justifying the override. The assessment is re-validated after the review is recorded.
 
 ## Results and group documents
 
