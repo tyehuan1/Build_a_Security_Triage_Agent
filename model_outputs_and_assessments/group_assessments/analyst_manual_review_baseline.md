@@ -36,7 +36,7 @@
 | blast_radius | 2 | As a Domain Controller, compromise affects the entire domain/organization, including all domain-joined endpoints and servers. | E28 | Y |
 
 Likelihood 4 (Medium), Impact 2 (High), matrix -> High (P-H-L4I2)
-- ADJ-RTO: RTO <= 4 hours raises impact one level - input 4 (known); Triggered but not binding: impact was already at the maximum. Evidence: E26. Confirmed: E26: Y, not sure where the BS01 came from, should just be S01.
+- ADJ-RTO: RTO <= 4 hours raises impact one level - input 4 (known); Triggered but not binding: impact was already at the maximum. Evidence: E26. Confirmed: E26: Y, not sure where the BS01 came from, should just be S05.
 - ADJ-CIA: All CVSS C/I/A Low or None lowers impact one level - input C:H/I:H/A:H (known); Not triggered. Confirmed: Y
 
 ## Evidence
@@ -48,7 +48,7 @@ Likelihood 4 (Medium), Impact 2 (High), matrix -> High (P-H-L4I2)
 | E3 | The asset runs AD DS, DNS Server, Kerberos, and Group Policy. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
 | E4 | There are 4 hosts for this asset. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
 | E5 | The asset is distributed across HQ (2) and RECOVERY (2) sites. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
-| E6 | The asset is Tier 0. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
+| E6 | The asset is Tier 0. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Partial, asset is critical both in importance (IDENTITY) and reach, but nowhere is it specified that the domain controllers are tier 0. |
 | E7 | The operating system is Windows Server 2022. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
 | E8 | The network zone is IDENTITY. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
 | E9 | The search for 'DNS Server' matched only asset W01 out of 44 assets searched, and the register is complete at cohort level. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
@@ -65,9 +65,9 @@ Likelihood 4 (Medium), Impact 2 (High), matrix -> High (P-H-L4I2)
 | E20 | The os_build for asset W01 is null. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
 | E21 | Internet exposure is none. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
 | E22 | The source for DNS traffic is Domain-joined devices (all internal client and server zones). | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
-| E23 | Ports 53/tcp and 53/udp are open to the asset. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
+| E23 | Ports 53/tcp and 53/udp are open to the asset. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Assumed, nowhere is it stated that port 53 is open but given that the domain controllers and domain-joined devices support DNS this is likely the case. |
 | E24 | The CVE is not listed in KEV. | CISA KEV via lookup_kev<br>https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json | live | Y |
 | E25 | Microsoft reports 'Publicly disclosed No', 'Exploited No', and 'Exploitability assessment Exploitation More Likely'. | msrc.microsoft.com via tavily_search<br>https://msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2026-69730 | live | Y |
-| E26 | The RTO for BS01 is 4 hours. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
+| E26 | The RTO for BS01 is 4 hours. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y, not sure where the BS01 came from, should just be S05. |
 | E27 | Identity outage can block new logins across 1,000 staff. | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
 | E28 | Dependents include all domain-joined endpoints and servers (authentication, DNS, Group Policy). | Northbridge environment via environment_search<br>Resources/windows_enterprise_environment.json | simulated | Y |
