@@ -1,0 +1,147 @@
+{
+  "call_id": "T7",
+  "tool": "tavily_search",
+  "selected_by": "model",
+  "model_call_id": "call_b287vw05",
+  "arguments": {
+    "allowed_domains": [
+      "msrc.microsoft.com",
+      "support.microsoft.com",
+      "learn.microsoft.com",
+      "cisa.gov",
+      "nvd.nist.gov",
+      "cve.org",
+      "bleepingcomputer.com"
+    ],
+    "max_results": 5,
+    "query": "CVE-2026-69730 exploit proof of concept vendor assessment patch"
+  },
+  "started_at": "2026-10-12T20:01:54-04:00",
+  "finished_at": "2026-10-12T20:01:55-04:00",
+  "status": "found",
+  "error": null,
+  "result": {
+    "status": "found",
+    "results": [
+      {
+        "title": "Researchers to release exploit for new VMware auth bypass, patch now",
+        "url": "https://www.bleepingcomputer.com/news/security/researchers-to-release-exploit-for-new-vmware-auth-bypass-patch-now",
+        "snippet": "Security researchers at attack surface assessment company Horizon3 announced today that they managed to create a working proof-of-concept (PoC) exploit code for CVE-2022-22972 and will likely release a technical report at the end of the week.\n\nThey have not released any technical details yet but the plan includes publishing exploit code that demonstrates the attack vector. [...] # Researchers to release exploit for new VMware auth bypass, patch now\n\n###### Ionut Ilascu\n\n May 24, 2022\n 10:16 AM\n 0\n\nProof-of-concept exploit code is about to be published for a vulnerability that allows administrative access without authentication in several VMware products.\n\nIdentified as CVE-2022-22972, the security issue received a fix last Wednesday, accompanied by an urgent warning for administrators to install the patch or apply mitigations immediately.\n\n### PoC to be released",
+        "published_date": null,
+        "score": 0.9145738086992272
+      },
+      {
+        "title": "Researchers to release exploit for new VMware auth bypass, patch now",
+        "url": "https://www.bleepingcomputer.com/news/security/researchers-to-release-exploit-for-new-vmware-auth-bypass-patch-now/amp",
+        "snippet": "Security researchers at attack surface assessment company Horizon3 announced today that they managed to create a working proof-of-concept (PoC) exploit code for CVE-2022-22972 and will likely release a technical report at the end of the week.\n\nThey have not released any technical details yet but the plan includes publishing exploit code that demonstrates the attack vector. [...] # Researchers to release exploit for new VMware auth bypass, patch now\n\n###### Ionut Ilascu\n\n May 24, 2022\n 10:16 AM\n\nProof-of-concept exploit code is about to be published for a vulnerability that allows administrative access without authentication in several VMware products.\n\nIdentified as CVE-2022-22972, the security issue received a fix last Wednesday, accompanied by an urgent warning for administrators to install the patch or apply mitigations immediately.\n\n### PoC to be released",
+        "published_date": null,
+        "score": 0.9145738086992272
+      },
+      {
+        "title": "Mitel MiCollab zero-day flaw gets proof-of-concept exploit",
+        "url": "https://bleepingcomputer.com/news/security/mitel-micollab-zero-day-flaw-gets-proof-of-concept-exploit",
+        "snippet": "The latest vulnerability in the product was discovered by researchers at watchTowr, who, despite having reported to the vendor since August, it remains unfixed after 90 days of being disclosed and waiting for a patch. [...] Microsoft September 2026 Patch Tuesday fixes 966 flaws, 2 zero-days\n\nMagento StyleSmuggler zero-day exploited to deploy Linux backdoor [...] The latest zero-day, which does not have a CVE identifier assigned to it yet, was discovered while investigating previously reported vulnerabilities in MiCollab, experimenting with path traversal and input manipulation techniques.\n\nSpecifically, the researchers were investigating CVE-2024-35286, an SQL injection flaw that Mitel fixed on May 23, and CVE-2024-41713, an authentication bypass issue addressed by the vendor on October 9.",
+        "published_date": null,
+        "score": 0.9116791888338508
+      },
+      {
+        "title": "Mitel MiCollab zero-day flaw gets proof-of-concept exploit",
+        "url": "https://www.bleepingcomputer.com/news/security/mitel-micollab-zero-day-flaw-gets-proof-of-concept-exploit",
+        "snippet": "The latest vulnerability in the product was discovered by researchers at watchTowr, who, despite having reported to the vendor since August, it remains unfixed after 90 days of being disclosed and waiting for a patch. [...] Microsoft September 2026 Patch Tuesday fixes 966 flaws, 2 zero-days\n\nMagento StyleSmuggler zero-day exploited to deploy Linux backdoor [...] The latest zero-day, which does not have a CVE identifier assigned to it yet, was discovered while investigating previously reported vulnerabilities in MiCollab, experimenting with path traversal and input manipulation techniques.\n\nSpecifically, the researchers were investigating CVE-2024-35286, an SQL injection flaw that Mitel fixed on May 23, and CVE-2024-41713, an authentication bypass issue addressed by the vendor on October 9.",
+        "published_date": null,
+        "score": 0.9116791888338508
+      },
+      {
+        "title": "CVE-2026-69730 - Security Update Guide - Microsoft",
+        "url": "https://msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2026-69730",
+        "snippet": "Use after free in Windows DNS allows an unauthorized attacker to execute code over a network.\n\n## Exploitability\n\nThe following table provides an exploitability assessment for this vulnerability at the time of original publication.\n\nPublicly disclosed No Exploited No Exploitability assessment Exploitation More Likely\n\n## FAQ\n\nHow could an attacker exploit this vulnerability? [...] Official Fix\n\nA complete vendor solution is available. Either the vendor has issued an official patch, or an upgrade is available.\n\nReport Confidence [...] This metric describes the conditions beyond the attacker’s control that must exist in order to exploit the vulnerability. Such conditions may require the collection of more information about the target or computational exceptions. The assessment of this metric excludes any requirements for user interaction in order to exploit the vulnerability. If a specific configuration is required for an attack to succeed, the Base metrics should be scored assuming the vulnerable component is in that",
+        "published_date": null,
+        "score": 0.9113256563767864
+      }
+    ],
+    "query": "CVE-2026-69730 exploit proof of concept vendor assessment patch",
+    "allowed_domains": [
+      "msrc.microsoft.com",
+      "support.microsoft.com",
+      "learn.microsoft.com",
+      "cisa.gov",
+      "nvd.nist.gov",
+      "cve.org",
+      "bleepingcomputer.com"
+    ],
+    "retrieved_at": "2026-10-12T20:01:55-04:00",
+    "mode": "live",
+    "request_id": "e2e58cad-e19c-4b93-bb86-c162839e06ad",
+    "dropped_off_allowlist": 0
+  },
+  "receipts": [
+    {
+      "source": "tavily",
+      "status": "ok",
+      "mode": "live",
+      "url": "https://api.tavily.com/search",
+      "retrieved_at": "2026-10-12T20:01:55-04:00",
+      "attempts": 1,
+      "fallback_reason": null,
+      "error": null,
+      "http_status": 200,
+      "final_url": "https://api.tavily.com/search",
+      "bytes": 5943,
+      "sha256": "c1238e35ed34a0e47463ba6ff39282518c1f73c0efa0a8beef45756fb2db0377",
+      "elapsed_ms": 844,
+      "request_id": "e2e58cad-e19c-4b93-bb86-c162839e06ad"
+    }
+  ],
+  "source_raw": {
+    "tavily": {
+      "query": "CVE-2026-69730 exploit proof of concept vendor assessment patch",
+      "follow_up_questions": null,
+      "answer": null,
+      "images": [],
+      "results": [
+        {
+          "url": "https://www.bleepingcomputer.com/news/security/researchers-to-release-exploit-for-new-vmware-auth-bypass-patch-now",
+          "title": "Researchers to release exploit for new VMware auth bypass, patch now",
+          "content": "Security researchers at attack surface assessment company Horizon3 announced today that they managed to create a working proof-of-concept (PoC) exploit code for CVE-2022-22972 and will likely release a technical report at the end of the week.\n\nThey have not released any technical details yet but the plan includes publishing exploit code that demonstrates the attack vector. [...] # Researchers to release exploit for new VMware auth bypass, patch now\n\n###### Ionut Ilascu\n\n May 24, 2022\n 10:16 AM\n 0\n\nProof-of-concept exploit code is about to be published for a vulnerability that allows administrative access without authentication in several VMware products.\n\nIdentified as CVE-2022-22972, the security issue received a fix last Wednesday, accompanied by an urgent warning for administrators to install the patch or apply mitigations immediately.\n\n### PoC to be released",
+          "score": 0.9145738086992272,
+          "raw_content": null,
+          "id": "64e711-00"
+        },
+        {
+          "url": "https://www.bleepingcomputer.com/news/security/researchers-to-release-exploit-for-new-vmware-auth-bypass-patch-now/amp",
+          "title": "Researchers to release exploit for new VMware auth bypass, patch now",
+          "content": "Security researchers at attack surface assessment company Horizon3 announced today that they managed to create a working proof-of-concept (PoC) exploit code for CVE-2022-22972 and will likely release a technical report at the end of the week.\n\nThey have not released any technical details yet but the plan includes publishing exploit code that demonstrates the attack vector. [...] # Researchers to release exploit for new VMware auth bypass, patch now\n\n###### Ionut Ilascu\n\n May 24, 2022\n 10:16 AM\n\nProof-of-concept exploit code is about to be published for a vulnerability that allows administrative access without authentication in several VMware products.\n\nIdentified as CVE-2022-22972, the security issue received a fix last Wednesday, accompanied by an urgent warning for administrators to install the patch or apply mitigations immediately.\n\n### PoC to be released",
+          "score": 0.9145738086992272,
+          "raw_content": null,
+          "id": "44f0f7-01"
+        },
+        {
+          "url": "https://bleepingcomputer.com/news/security/mitel-micollab-zero-day-flaw-gets-proof-of-concept-exploit",
+          "title": "Mitel MiCollab zero-day flaw gets proof-of-concept exploit",
+          "content": "The latest vulnerability in the product was discovered by researchers at watchTowr, who, despite having reported to the vendor since August, it remains unfixed after 90 days of being disclosed and waiting for a patch. [...] Microsoft September 2026 Patch Tuesday fixes 966 flaws, 2 zero-days\n\nMagento StyleSmuggler zero-day exploited to deploy Linux backdoor [...] The latest zero-day, which does not have a CVE identifier assigned to it yet, was discovered while investigating previously reported vulnerabilities in MiCollab, experimenting with path traversal and input manipulation techniques.\n\nSpecifically, the researchers were investigating CVE-2024-35286, an SQL injection flaw that Mitel fixed on May 23, and CVE-2024-41713, an authentication bypass issue addressed by the vendor on October 9.",
+          "score": 0.9116791888338508,
+          "raw_content": null,
+          "id": "5be261-02"
+        },
+        {
+          "url": "https://www.bleepingcomputer.com/news/security/mitel-micollab-zero-day-flaw-gets-proof-of-concept-exploit",
+          "title": "Mitel MiCollab zero-day flaw gets proof-of-concept exploit",
+          "content": "The latest vulnerability in the product was discovered by researchers at watchTowr, who, despite having reported to the vendor since August, it remains unfixed after 90 days of being disclosed and waiting for a patch. [...] Microsoft September 2026 Patch Tuesday fixes 966 flaws, 2 zero-days\n\nMagento StyleSmuggler zero-day exploited to deploy Linux backdoor [...] The latest zero-day, which does not have a CVE identifier assigned to it yet, was discovered while investigating previously reported vulnerabilities in MiCollab, experimenting with path traversal and input manipulation techniques.\n\nSpecifically, the researchers were investigating CVE-2024-35286, an SQL injection flaw that Mitel fixed on May 23, and CVE-2024-41713, an authentication bypass issue addressed by the vendor on October 9.",
+          "score": 0.9116791888338508,
+          "raw_content": null,
+          "id": "867114-03"
+        },
+        {
+          "url": "https://msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2026-69730",
+          "title": "CVE-2026-69730 - Security Update Guide - Microsoft",
+          "content": "Use after free in Windows DNS allows an unauthorized attacker to execute code over a network.\n\n## Exploitability\n\nThe following table provides an exploitability assessment for this vulnerability at the time of original publication.\n\nPublicly disclosed No Exploited No Exploitability assessment Exploitation More Likely\n\n## FAQ\n\nHow could an attacker exploit this vulnerability? [...] Official Fix\n\nA complete vendor solution is available. Either the vendor has issued an official patch, or an upgrade is available.\n\nReport Confidence [...] This metric describes the conditions beyond the attacker’s control that must exist in order to exploit the vulnerability. Such conditions may require the collection of more information about the target or computational exceptions. The assessment of this metric excludes any requirements for user interaction in order to exploit the vulnerability. If a specific configuration is required for an attack to succeed, the Base metrics should be scored assuming the vulnerable component is in that",
+          "score": 0.9113256563767864,
+          "raw_content": null,
+          "id": "fc77e1-04"
+        }
+      ],
+      "response_time": 0.0,
+      "request_id": "e2e58cad-e19c-4b93-bb86-c162839e06ad"
+    }
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "call_id": "T8",
+  "tool": "tavily_search",
+  "selected_by": "model",
+  "model_call_id": "call_7ugwryie",
+  "arguments": {
+    "allowed_domains": [
+      "msrc.microsoft.com",
+      "support.microsoft.com",
+      "learn.microsoft.com",
+      "cisa.gov",
+      "nvd.nist.gov",
+      "cve.org",
+      "zerodayinitiative.com",
+      "rapid7.com",
+      "tenable.com",
+      "crowdstrike.com",
+      "unit42.paloaltonetworks.com",
+      "securelist.com",
+      "bleepingcomputer.com"
+    ],
+    "max_results": 5,
+    "query": "CVE-2026-69730 CVSS vector fixed build KB Microsoft"
+  },
+  "started_at": "2026-10-12T20:02:46-04:00",
+  "finished_at": "2026-10-12T20:02:49-04:00",
+  "status": "found",
+  "error": null,
+  "result": {
+    "status": "found",
+    "results": [
+      {
+        "title": "NVD-CVE-2026-69730",
+        "url": "https://nvd.nist.gov/vuln/detail/cve-2026-69730",
+        "snippet": "| Microsoft | Windows Server 2012 R2 (Server Core installation) | Affected 6.3.9600.0 < 6.3.9600.23398 |\n| Microsoft | Windows Server 2016 | Affected 10.0.14393.0 < 10.0.14393.9512 |\n| Microsoft | Windows Server 2016 (Server Core installation) | Affected 10.0.14393.0 < 10.0.14393.9512 |\n| Microsoft | Windows Server 2019 | Affected 10.0.17763.0 < 10.0.17763.9245 |\n| Microsoft | Windows Server 2019 (Server Core installation) | Affected 10.0.17763.0 < 10.0.17763.9245 | [...] | Vendor | Product | Versions |\n --- \n| Microsoft | Windows 10 Version 1607 | Affected 10.0.14393.0 < 10.0.14393.9512 |\n| Microsoft | Windows 10 Version 1809 | Affected 10.0.17763.0 < 10.0.17763.9245 |\n| Microsoft | Windows Server 2012 | Affected 6.2.9200.0 < 6.2.9200.26349 |\n| Microsoft | Windows Server 2012 (Server Core installation) | Affected 6.2.9200.0 < 6.2.9200.26349 |\n| Microsoft | Windows Server 2012 R2 | Affected 6.3.9600.0 < 6.3.9600.23398 | [...] | Microsoft | Windows Server 2022 | Affected 10.0.20348.0 < 10.0.20348.5622 |\n| Microsoft | Windows Server 2025 | Affected 10.0.26100.0 < 10.0.26100.33438 |\n| Microsoft | Windows Server 2025 (Server Core installation) | Affected 10.0.26100.0 < 10.0.26100.33438",
+        "published_date": null,
+        "score": 0.73207545
+      },
+      {
+        "title": "CVE-2026-69730: Use After Free | Rapid7 Vulnerability Database",
+        "url": "https://www.rapid7.com/db/vulnerabilities/cve-2026-69730",
+        "snippet": "Loading vulnerability database\n\nCVE-2026-69730: Use After Free | Rapid7 Vulnerability Database\n\nBACK TO VEDB\n\n# CVE-2026-69730: Use After Free\n\nREQUEST DEMO\n\nUse after free in Windows DNS allows an unauthorized attacker to execute code over a network.\n\n## CVSS Details\n\n CVSS 3.1 Base Score: 9.8\n CVSS 3.1 Vector: (CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H)\n\n## Covered by Rapid7 [...] | Microsoft Windows | — | 2026-09 Cumulative Update for Microsoft Windows Server 2012 (KB5123065)2026-09 Cumulative Update for Microsoft Windows Server 2012 R2 (KB5123066)2026-09 Cumulative Update for Microsoft Windows 10, version 1809 (KB5122876)2026-09 Cumulative Update for Microsoft Windows Server 2022, version 22H2 (KB5122882)2026-09 Cumulative Update for Microsoft Windows Server 2016, version 1607 (KB5123099)2026-09 Cumulative Update for Microsoft Windows Server 2022, version 21H2 [...] 2022, version 21H2 (KB5122882)2026-09 Cumulative Update for Microsoft Windows 10, version 1607 (KB5123099)2026-09 Cumulative Update for Microsoft Windows Server 2019, version 1809 (KB5122876)2026-09 Cumulative Update for Microsoft Windows Server 2025, version 24H2 (KB5122871) | Sep 8, 2026 | Sep 8, 2026 |",
+        "published_date": null,
+        "score": 0.7156829
+      },
+      {
+        "title": "CVE-2026-69730<!-- --> | Tenable®",
+        "url": "https://www.tenable.com/cve/CVE-2026-69730",
+        "snippet": "Base Score: 10\n\nVector: CVSS2#AV:N/AC:L/Au:N/C:C/I:C/A:C\n\nSeverity: Critical\n\n##### CVSS v3\n\nBase Score: 9.8\n\nVector: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n\nSeverity: Critical\n\n##### EPSS\n\nEPSS: 0.00974 [...] ###### Analytics\n\n CVEs\n\n Overview\n Newest\n Updated\n Search\n\n Attack Path Techniques\n\n Overview\n Search\n\n# CVE-2026-69730\n\n###### critical\n\n Information\n CPEs\n Plugins\n\n#### Description\n\nUse after free in Windows DNS allows an unauthorized attacker to execute code over a network.\n\n#### References\n\n Advisories\n References\n Tenable Blogs\n More\n\n#### Details\n\nSource: Mitre, NVD\n\nPublished: 2026-09-08\n\nUpdated: 2026-09-24\n\n#### Risk Information\n\n##### CVSS v2\n\nBase Score: 10 [...] Plugins\n\n Overview\n Plugins Pipeline\n Release Notes\n Newest\n Updated\n Search\n Nessus Families\n WAS Families\n NNM Families\n Tenable OT Security Families\n Tenable Cloud Security Families\n Tenable Self-Hosted Container Security Families\n About Plugin Families\n\n Audits\n\n Overview\n Newest\n Updated\n Search Audit Files\n Search Items\n References\n Authorities\n Documentation\n Download All Audit Files\n\n Indicators\n\n Overview\n Search\n Indicators of Attack\n Indicators of Exposure\n Release Notes",
+        "published_date": null,
+        "score": 0.6826801
+      },
+      {
+        "title": "CVE-2026-41103<!-- --> | Tenable®",
+        "url": "https://www.tenable.com/cve/CVE-2026-41103",
+        "snippet": "Published: 2026-05-12\n\nMicrosoft fixed 118 CVEs in the May 2026 Patch Tuesday, with no zero-days exploited in the wild or publicly disclosed for the first time since June 2024.\n\n#### References\n\n Advisories\n References\n Tenable Blogs\n More\n\n#### Details\n\nSource: Mitre, NVD\n\nPublished: 2026-05-12\n\nUpdated: 2026-05-16\n\n#### Risk Information\n\n##### CVSS v2\n\nBase Score: 9.4\n\nVector: CVSS2#AV:N/AC:L/Au:N/C:C/I:C/A:N\n\nSeverity: High\n\n##### CVSS v3\n\nBase Score: 9.1",
+        "published_date": null,
+        "score": 0.39110413
+      },
+      {
+        "title": "Microsoft Edge (Chromium) < 150.0.4078.50 (CVE-2026-58525)<!-- --> | Tenable®",
+        "url": "https://www.tenable.com/plugins/nessus/329366",
+        "snippet": "#### Risk Information\n\n##### VPR\n\nRisk Factor: Low\n\nScore: 3.9\n\nPercentile: 52.81\n\n##### CVSS v2\n\nRisk Factor: High\n\nBase Score: 8.5\n\nTemporal Score: 6.3\n\nVector: CVSS2#AV:N/AC:L/Au:N/C:C/I:P/A:N\n\nCVSS Score Source: CVE-2026-58525\n\n##### CVSS v3\n\nRisk Factor: High\n\nBase Score: 8.2\n\nTemporal Score: 7.1\n\nVector: CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:L/A:N\n\nTemporal Vector: CVSS:3.0/E:U/RL:O/RC:C\n\n#### Vulnerability Information\n\nCPE: cpe:/a:microsoft:edge [...] #### Description\n\nThe version of Microsoft Edge installed on the remote Windows host is prior to 150.0.4078.50. It is, therefore, affected by a vulnerability as referenced in the July 8, 2026 advisory.  \n  \n - Improper access control in Microsoft Edge (Chromium-based) allows an unauthorized attacker to bypass a security feature over a network. (CVE-2026-58525)  \n  \nNote that Nessus has not tested for this issue but has instead relied only on the application's self-reported version number. [...] ###### Analytics\n\n CVEs\n\n Overview\n Newest\n Updated\n Search\n\n Attack Path Techniques\n\n Overview\n Search\n\n# Microsoft Edge (Chromium) < 150.0.4078.50 (CVE-2026-58525)\n\n###### high Nessus Plugin ID 329366\n\nLanguage:\n\n Information\n Depende",
+        "published_date": null,
+        "score": 0.24988674
+      }
+    ],
+    "query": "CVE-2026-69730 CVSS vector fixed build KB Microsoft",
+    "allowed_domains": [
+      "msrc.microsoft.com",
+      "support.microsoft.com",
+      "learn.microsoft.com",
+      "cisa.gov",
+      "nvd.nist.gov",
+      "cve.org",
+      "zerodayinitiative.com",
+      "rapid7.com",
+      "tenable.com",
+      "crowdstrike.com",
+      "unit42.paloaltonetworks.com",
+      "securelist.com",
+      "bleepingcomputer.com"
+    ],
+    "retrieved_at": "2026-10-12T20:02:49-04:00",
+    "mode": "live",
+    "request_id": "c257e2fe-c968-4193-9628-d84873d65d45",
+    "dropped_off_allowlist": 0
+  },
+  "receipts": [
+    {
+      "source": "tavily",
+      "status": "ok",
+      "mode": "live",
+      "url": "https://api.tavily.com/search",
+      "retrieved_at": "2026-10-12T20:02:49-04:00",
+      "attempts": 1,
+      "fallback_reason": null,
+      "error": null,
+      "http_status": 200,
+      "final_url": "https://api.tavily.com/search",
+      "bytes": 6719,
+      "sha256": "417035f13c15f28e13d0fbd6a9862655de243430e8e3289e0ebd99d6aa1b8a03",
+      "elapsed_ms": 2375,
+      "request_id": "c257e2fe-c968-4193-9628-d84873d65d45"
+    }
+  ],
+  "source_raw": {
+    "tavily": {
+      "query": "CVE-2026-69730 CVSS vector fixed build KB Microsoft",
+      "follow_up_questions": null,
+      "answer": null,
+      "images": [],
+      "results": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/cve-2026-69730",
+          "title": "NVD-CVE-2026-69730",
+          "content": "| Microsoft | Windows Server 2012 R2 (Server Core installation) | Affected 6.3.9600.0 < 6.3.9600.23398 |\n| Microsoft | Windows Server 2016 | Affected 10.0.14393.0 < 10.0.14393.9512 |\n| Microsoft | Windows Server 2016 (Server Core installation) | Affected 10.0.14393.0 < 10.0.14393.9512 |\n| Microsoft | Windows Server 2019 | Affected 10.0.17763.0 < 10.0.17763.9245 |\n| Microsoft | Windows Server 2019 (Server Core installation) | Affected 10.0.17763.0 < 10.0.17763.9245 | [...] | Vendor | Product | Versions |\n --- \n| Microsoft | Windows 10 Version 1607 | Affected 10.0.14393.0 < 10.0.14393.9512 |\n| Microsoft | Windows 10 Version 1809 | Affected 10.0.17763.0 < 10.0.17763.9245 |\n| Microsoft | Windows Server 2012 | Affected 6.2.9200.0 < 6.2.9200.26349 |\n| Microsoft | Windows Server 2012 (Server Core installation) | Affected 6.2.9200.0 < 6.2.9200.26349 |\n| Microsoft | Windows Server 2012 R2 | Affected 6.3.9600.0 < 6.3.9600.23398 | [...] | Microsoft | Windows Server 2022 | Affected 10.0.20348.0 < 10.0.20348.5622 |\n| Microsoft | Windows Server 2025 | Affected 10.0.26100.0 < 10.0.26100.33438 |\n| Microsoft | Windows Server 2025 (Server Core installation) | Affected 10.0.26100.0 < 10.0.26100.33438 |",
+          "score": 0.73207545,
+          "raw_content": null,
+          "id": "3f1f0f-00"
+        },
+        {
+          "url": "https://www.rapid7.com/db/vulnerabilities/cve-2026-69730",
+          "title": "CVE-2026-69730: Use After Free | Rapid7 Vulnerability Database",
+          "content": "Loading vulnerability database\n\nCVE-2026-69730: Use After Free | Rapid7 Vulnerability Database\n\nBACK TO VEDB\n\n# CVE-2026-69730: Use After Free\n\nREQUEST DEMO\n\nUse after free in Windows DNS allows an unauthorized attacker to execute code over a network.\n\n## CVSS Details\n\n CVSS 3.1 Base Score: 9.8\n CVSS 3.1 Vector: (CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H)\n\n## Covered by Rapid7 [...] | Microsoft Windows | — | 2026-09 Cumulative Update for Microsoft Windows Server 2012 (KB5123065)2026-09 Cumulative Update for Microsoft Windows Server 2012 R2 (KB5123066)2026-09 Cumulative Update for Microsoft Windows 10, version 1809 (KB5122876)2026-09 Cumulative Update for Microsoft Windows Server 2022, version 22H2 (KB5122882)2026-09 Cumulative Update for Microsoft Windows Server 2016, version 1607 (KB5123099)2026-09 Cumulative Update for Microsoft Windows Server 2022, version 21H2 [...] 2022, version 21H2 (KB5122882)2026-09 Cumulative Update for Microsoft Windows 10, version 1607 (KB5123099)2026-09 Cumulative Update for Microsoft Windows Server 2019, version 1809 (KB5122876)2026-09 Cumulative Update for Microsoft Windows Server 2025, version 24H2 (KB5122871) | Sep 8, 2026 | Sep 8, 2026 |",
+          "score": 0.7156829,
+          "raw_content": null,
+          "id": "253107-01"
+        },
+        {
+          "url": "https://www.tenable.com/cve/CVE-2026-69730",
+          "title": "CVE-2026-69730<!-- --> | Tenable®",
+          "content": "Base Score: 10\n\nVector: CVSS2#AV:N/AC:L/Au:N/C:C/I:C/A:C\n\nSeverity: Critical\n\n##### CVSS v3\n\nBase Score: 9.8\n\nVector: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\n\nSeverity: Critical\n\n##### EPSS\n\nEPSS: 0.00974 [...] ###### Analytics\n\n CVEs\n\n Overview\n Newest\n Updated\n Search\n\n Attack Path Techniques\n\n Overview\n Search\n\n# CVE-2026-69730\n\n###### critical\n\n Information\n CPEs\n Plugins\n\n#### Description\n\nUse after free in Windows DNS allows an unauthorized attacker to execute code over a network.\n\n#### References\n\n Advisories\n References\n Tenable Blogs\n More\n\n#### Details\n\nSource: Mitre, NVD\n\nPublished: 2026-09-08\n\nUpdated: 2026-09-24\n\n#### Risk Information\n\n##### CVSS v2\n\nBase Score: 10 [...] Plugins\n\n Overview\n Plugins Pipeline\n Release Notes\n Newest\n Updated\n Search\n Nessus Families\n WAS Families\n NNM Families\n Tenable OT Security Families\n Tenable Cloud Security Families\n Tenable Self-Hosted Container Security Families\n About Plugin Families\n\n Audits\n\n Overview\n Newest\n Updated\n Search Audit Files\n Search Items\n References\n Authorities\n Documentation\n Download All Audit Files\n\n Indicators\n\n Overview\n Search\n Indicators of Attack\n Indicators of Exposure\n Release Notes",
+          "score": 0.6826801,
+          "raw_content": null,
+          "id": "cb1aa6-02"
+        },
+        {
+          "url": "https://www.tenable.com/cve/CVE-2026-41103",
+          "title": "CVE-2026-41103<!-- --> | Tenable®",
+          "content": "Published: 2026-05-12\n\nMicrosoft fixed 118 CVEs in the May 2026 Patch Tuesday, with no zero-days exploited in the wild or publicly disclosed for the first time since June 2024.\n\n#### References\n\n Advisories\n References\n Tenable Blogs\n More\n\n#### Details\n\nSource: Mitre, NVD\n\nPublished: 2026-05-12\n\nUpdated: 2026-05-16\n\n#### Risk Information\n\n##### CVSS v2\n\nBase Score: 9.4\n\nVector: CVSS2#AV:N/AC:L/Au:N/C:C/I:C/A:N\n\nSeverity: High\n\n##### CVSS v3\n\nBase Score: 9.1",
+          "score": 0.39110413,
+          "raw_content": null,
+          "id": "0c82da-03"
+        },
+        {
+          "url": "https://www.tenable.com/plugins/nessus/329366",
+          "title": "Microsoft Edge (Chromium) < 150.0.4078.50 (CVE-2026-58525)<!-- --> | Tenable®",
+          "content": "#### Risk Information\n\n##### VPR\n\nRisk Factor: Low\n\nScore: 3.9\n\nPercentile: 52.81\n\n##### CVSS v2\n\nRisk Factor: High\n\nBase Score: 8.5\n\nTemporal Score: 6.3\n\nVector: CVSS2#AV:N/AC:L/Au:N/C:C/I:P/A:N\n\nCVSS Score Source: CVE-2026-58525\n\n##### CVSS v3\n\nRisk Factor: High\n\nBase Score: 8.2\n\nTemporal Score: 7.1\n\nVector: CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:L/A:N\n\nTemporal Vector: CVSS:3.0/E:U/RL:O/RC:C\n\n#### Vulnerability Information\n\nCPE: cpe:/a:microsoft:edge [...] #### Description\n\nThe version of Microsoft Edge installed on the remote Windows host is prior to 150.0.4078.50. It is, therefore, affected by a vulnerability as referenced in the July 8, 2026 advisory.  \n  \n - Improper access control in Microsoft Edge (Chromium-based) allows an unauthorized attacker to bypass a security feature over a network. (CVE-2026-58525)  \n  \nNote that Nessus has not tested for this issue but has instead relied only on the application's self-reported version number. [...] ###### Analytics\n\n CVEs\n\n Overview\n Newest\n Updated\n Search\n\n Attack Path Techniques\n\n Overview\n Search\n\n# Microsoft Edge (Chromium) < 150.0.4078.50 (CVE-2026-58525)\n\n###### high Nessus Plugin ID 329366\n\nLanguage:\n\n Information\n Dependencies\n Dependents\n Changelog\n\n#### Synopsis\n\nThe remote host has an web browser installed that is affected by a vulnerability.\n\n#### Description",
+          "score": 0.24988674,
+          "raw_content": null,
+          "id": "6c6f0b-04"
+        }
+      ],
+      "response_time": 1.83,
+      "request_id": "c257e2fe-c968-4193-9628-d84873d65d45"
+    }
+  }
+}

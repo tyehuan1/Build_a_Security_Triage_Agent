@@ -4,8 +4,11 @@
   -> Extract facts (model) -> Fact validation (code) -> Gate 1 / Gate 2 (code, policy.py)
   -> Explain and recommend (model) -> Assemble, validate and save (code) -> Analyst review (human, review.py)
 
-Everything a run uses or produces is saved under runs/<run_id>/: config, prompts, input copies with
-hashes, raw tool outputs, the model transcript, the run log and the assessment.
+Everything a run uses or produces is saved under model_outputs_and_assessments/<run_id>/:
+    assessment.json             the structured assessment (with validation results)
+    tool_outputs/T#.json        raw tool outputs, SHA-256 recorded in the tool trace
+    inputs/                     copies of the threat input and environment snapshot
+    other_info/                 config.json, inputs.json (hashes), prompts.json, model_transcript.jsonl, run_log.jsonl
 """
 
 from __future__ import annotations
@@ -104,7 +107,7 @@ def intake(settings: dict, run_dir: Path) -> tuple[dict, dict]:
     for label, p in (("threat_input", threat_path), ("environment_snapshot", env_path)):
         shutil.copy2(p, inputs_dir / p.name)
         saved[label] = {"source_path": _rel(p), "copy": _rel(inputs_dir / p.name), "sha256": _sha(p)}
-    (run_dir / "inputs.json").write_text(json.dumps(saved, indent=2), encoding="utf-8")
+    (run_dir / "other_info" / "inputs.json").write_text(json.dumps(saved, indent=2), encoding="utf-8")
 
     facts = {
         "risk_question": inp["risk_question"], "cve_id": inp["cve_id"], "asset_id": inp["asset_id"],
@@ -269,12 +272,17 @@ def run_assessment(settings: dict, *, llm_factory: Optional[Callable] = None, ru
     """Run the full workflow. Returns {"status", "run_dir", "assessment_path" | "failure_path", ...}."""
     run_id = run_id or f"{datetime.now():%Y%m%d-%H%M%S}_{settings['inputs']['cve_id']}_{settings['inputs']['asset_id']}"
     run_dir = Path(runs_dir or config.path(settings["paths"]["runs_dir"])) / run_id
-    run_dir.mkdir(parents=True, exist_ok=False)
-    log = RunLog(run_dir / "run_log.jsonl")
-    (run_dir / "config.json").write_text(json.dumps(config.redacted(settings), indent=2), encoding="utf-8")
-    (run_dir / "prompts.json").write_text(json.dumps(prompts.prompt_bundle(settings["model"]["max_tool_rounds"]), indent=2),
-                                          encoding="utf-8")
-    transcript = run_dir / "model_transcript.jsonl"
+    # A pre-created placeholder folder (empty apart from .gitkeep) may be used; never overwrite a previous run.
+    if run_dir.exists() and any(p.name != ".gitkeep" for p in run_dir.iterdir()):
+        raise FileExistsError(f"{run_dir} already contains a run; choose another --run-id")
+    info = run_dir / "other_info"
+    info.mkdir(parents=True, exist_ok=True)
+    (run_dir / ".gitkeep").unlink(missing_ok=True)
+    log = RunLog(info / "run_log.jsonl")
+    (info / "config.json").write_text(json.dumps(config.redacted(settings), indent=2), encoding="utf-8")
+    (info / "prompts.json").write_text(json.dumps(prompts.prompt_bundle(settings["model"]["max_tool_rounds"]), indent=2),
+                                       encoding="utf-8")
+    transcript = info / "model_transcript.jsonl"
     llm = (llm_factory or (lambda path: OllamaClient(settings, path)))(transcript)
     log("run_started", run_id=run_id, model=settings["model"]["name"],
         fault_injection={k: v for k, v in settings["fault_injection"].items() if not k.startswith("$")})

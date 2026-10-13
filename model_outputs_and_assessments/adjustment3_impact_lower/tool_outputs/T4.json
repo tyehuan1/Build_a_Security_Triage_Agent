@@ -1,0 +1,67 @@
+{
+  "call_id": "T4",
+  "tool": "environment_search",
+  "selected_by": "model",
+  "model_call_id": "call_iqf9pwib",
+  "arguments": {
+    "query": "W06",
+    "query_type": "business_service"
+  },
+  "started_at": "2026-10-12T20:16:10-04:00",
+  "finished_at": "2026-10-12T20:16:10-04:00",
+  "status": "found",
+  "error": null,
+  "result": {
+    "status": "found",
+    "query_type": "business_service",
+    "query": "W06",
+    "records": [
+      {
+        "record_type": "business_service",
+        "record_id": "BS05",
+        "locator": "business_services[service_id=BS05]",
+        "basis": "inferred",
+        "evidence_ids": [
+          "S05"
+        ],
+        "matched_on": [
+          "supporting_assets[1]: W06"
+        ],
+        "unknown_fields": [
+          "scope"
+        ],
+        "data": {
+          "service_id": "BS05",
+          "name": "Collaboration and general files",
+          "consequence": "Work interruption or confidential document disclosure",
+          "rto_hours": 24,
+          "rpo_hours": 8,
+          "scope": null,
+          "supporting_assets": [
+            "W05",
+            "W06",
+            "P01",
+            "C02"
+          ],
+          "supporting_assets_basis": "inferred",
+          "recovery_notes": "Restore exercise covered one file share.",
+          "evidence_ids": [
+            "S05"
+          ],
+          "source_locator": "Evidence controls and business impact, service table row 5"
+        }
+      }
+    ],
+    "total_matches": 1,
+    "truncated": 0,
+    "coverage": null,
+    "source": "windows_enterprise_environment_json",
+    "url_or_path": "Resources/policy_check_environments/adjustment3_impact_lower.json",
+    "retrieved_at": "2026-10-12T20:16:10-04:00",
+    "locator": "business_services[service_id=BS05]",
+    "mode": "simulated",
+    "conventions": "Unknown. Never treat null as a negative or a safe value."
+  },
+  "receipts": [],
+  "source_raw": {}
+}

@@ -65,7 +65,7 @@
   "paths": {
     "schema": "Resources/output_schema.json",
     "cache_manifest": "Resources/cache_manifest.json",
-    "runs_dir": "runs"
+    "runs_dir": "model_outputs_and_assessments"
   },
   "fault_injection": {
     "$comment": "Controlled-failure switches. All false for a normal run; set from the CLI (--fail SOURCE) rather than editing here.",

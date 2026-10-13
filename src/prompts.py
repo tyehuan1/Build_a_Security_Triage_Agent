@@ -8,7 +8,7 @@ Plus the corrective messages the orchestrator sends inside the loops (fabricated
 missing required evidence, round cap, failed fact validation).
 
 The model never computes likelihood/impact totals, the matrix result, the rating, the policy rule or
-the confidence level; policy.py does. Every run saves prompt_bundle() to runs/<id>/prompts.json.
+the confidence level; policy.py does. Every run saves prompt_bundle() to <run folder>/other_info/prompts.json.
 """
 
 from __future__ import annotations

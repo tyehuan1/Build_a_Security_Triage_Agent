@@ -1,0 +1,864 @@
+{
+  "assessment_id": "adjustment1_patched_build",
+  "generated_at": "2026-10-12T20:01:44-04:00",
+  "run_metadata": {
+    "agent_version": "0.1.0",
+    "policy_version": "rating-policy-v1.0",
+    "prompt_version": "prompts-v1.1",
+    "model": {
+      "provider": "Ollama Cloud",
+      "name": "gemma4:31b",
+      "temperature": 0,
+      "max_tool_calls": 20
+    },
+    "threat_input": {
+      "id": "CVE-2026-69730",
+      "path": "Resources/CVE-2026-69730.json",
+      "role": "Saved case input (assignment requirement) and cached fallback for the CVE source. Not shown to the model; live CVE/NVD data comes from lookup_vulnerability (see tool_trace)."
+    },
+    "environment_snapshot": {
+      "id": "northbridge-windows-enterprise-v1.0+adjustment1_patched_build",
+      "path": "Resources/policy_check_environments/adjustment1_patched_build.json",
+      "data_type": "simulated"
+    },
+    "run_id": "adjustment1_patched_build",
+    "run_dir": "model_outputs_and_assessments/adjustment1_patched_build",
+    "code_version": {
+      "git_commit": "53a4e71dc27b0a91c32eafd17fd9879cc253c62b",
+      "uncommitted_changes": true
+    },
+    "transcript_path": "model_outputs_and_assessments/adjustment1_patched_build/other_info/model_transcript.jsonl",
+    "plan_rounds": 2,
+    "fabrication_rejections": [],
+    "rejected_tool_requests": [],
+    "budget_refused_calls": [],
+    "completeness": {
+      "required": [
+        "environment_search",
+        "lookup_vulnerability"
+      ],
+      "followed_up": false,
+      "missing": []
+    },
+    "fact_validation": {
+      "passed": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "passed": true,
+          "problems": []
+        }
+      ]
+    },
+    "explanation_status": "model"
+  },
+  "asset": {
+    "asset_id": "W01",
+    "environment_record": "assets[asset_id=W01]",
+    "asset_name": "Domain controllers",
+    "services": [
+      "AD DS",
+      "DNS Server",
+      "Kerberos",
+      "Group Policy"
+    ],
+    "host_count": 4,
+    "sites": {
+      "HQ": 2,
+      "RECOVERY": 2
+    },
+    "tier": "Tier 0",
+    "operating_system": "Windows Server 2022",
+    "os_build": "10.0.20348.5631",
+    "network_zone": "IDENTITY",
+    "subnets": [],
+    "evidence_ids": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+    ],
+    "scope_check": {
+      "query": "whether any asset OTHER than the assessed asset runs the vulnerable service",
+      "result": "No other assets were found running the DNS Server service.",
+      "evidence_ids": [
+        "E10"
+      ]
+    }
+  },
+  "threat": {
+    "cve_id": "CVE-2026-69730",
+    "title": "Windows DNS Server Remote Code Execution Vulnerability",
+    "weakness_type": "software_vulnerability",
+    "affected_component": "Windows DNS",
+    "affected_products_relevant": [
+      "Windows Server 2022"
+    ],
+    "fix": {
+      "kb": null,
+      "fixed_build": "10.0.20348.5622"
+    },
+    "evidence_ids": [
+      "E11",
+      "E12",
+      "E13",
+      "E14"
+    ]
+  },
+  "decision": {
+    "rating": "Low",
+    "policy_rule_applied": "P-NA",
+    "gate_reached": "Gate 1",
+    "summary": "The vulnerability CVE-2026-69730 is Not Applicable to asset W01. Although the asset runs Windows Server 2022 and the DNS Server service, it is already patched. The current OS build (10.0.20348.5631) is higher than the required fixed build (10.0.20348.5622).",
+    "missing_decisive_facts": [],
+    "provisional": null,
+    "requires_analyst_review": true
+  },
+  "severity_vs_local_risk": {
+    "technical_severity": {
+      "cvss_version": "3.1",
+      "base_score": 9.8,
+      "base_severity": "Critical",
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H/E:U/RL:O/RC:C",
+      "source": "microsoft (CNA) via CVE record",
+      "evidence_ids": [
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19"
+      ]
+    },
+    "local_risk": "Low (P-NA)",
+    "explanation": "The technical severity is Critical (CVSS 9.8) due to the potential for remote code execution. However, the local risk is Low because the asset is already running a version of the operating system that includes the fix, neutralizing the threat."
+  },
+  "rationale": {
+    "applicability": {
+      "status": "Not Applicable",
+      "gate_1_outcome": "P-NA",
+      "conditions": [
+        {
+          "id": "C1",
+          "description": "The OS is in the affected products list",
+          "result": "true",
+          "basis": "The asset runs Windows Server 2022, which is listed as an affected product for CVE-2026-69730.",
+          "evidence_ids": [
+            "E7",
+            "E20"
+          ]
+        },
+        {
+          "id": "C2",
+          "description": "The DNS Server service is installed",
+          "result": "true",
+          "basis": "The DNS Server service is explicitly listed as installed on asset W01.",
+          "evidence_ids": [
+            "E3"
+          ]
+        },
+        {
+          "id": "C3",
+          "description": "The OS build is below the fixed build (10.0.20348.5622)",
+          "result": "false",
+          "basis": "The asset's OS build (10.0.20348.5631) is higher than the fixed build (10.0.20348.5622).",
+          "evidence_ids": [
+            "E8",
+            "E14"
+          ]
+        }
+      ]
+    },
+    "gate_2_status": "not_evaluated",
+    "likelihood": null,
+    "impact": null,
+    "matrix_result": null,
+    "other_factors": []
+  },
+  "evidence": [
+    {
+      "evidence_id": "E1",
+      "fact": "The asset ID is W01.",
+      "locator": "assets[asset_id=W01].data.asset_id",
+      "tool_call_id": "T2",
+      "published_date": null,
+      "last_modified_date": null,
+      "fallback_reason": null,
+      "source_name": "Northbridge environment via environment_search",
+      "source_type": "environment_snapshot",
+      "url_or_path": "Resources/policy_check_environments/adjustment1_patched_build.json",
+      "retrieved_at": "2026-10-12T20:01:24-04:00",
+      "retrieval_mode": "simulated",
+      "scenario_evidence_ids": [
+        "S01",
+        "S02",
+        "S05"
+      ]
+    },
+    {
+      "evidence_id": "E2",
+      "fact": "The asset name is Domain controllers.",
+      "locator": "assets[asset_id=W01].data.name",
+      "tool_call_id": "T2",
+      "published_date": null,
+      "last_modified_date": null,
+      "fallback_reason": null,
+      "source_name": "Northbridge environment via environment_search",
+      "source_type": "environment_snapshot",
+      "url_or_path": "Resources/policy_check_environments/adjustment1_patched_build.json",
+      "retrieved_at": "2026-10-12T20:01:24-04:00",
+      "retrieval_mode": "simulated",
+      "scenario_evidence_ids": [
+        "S01",
+        "S02",
+        "S05"
+      ]
+    },
+    {
+      "evidence_id": "E3",
+      "fact": "The asset runs AD DS, DNS Server, Kerberos, and Group Policy.",
+      "locator": "assets[asset_id=W01].data.services",
+      "tool_call_id": "T2",
+      "published_date": null,
+      "last_modified_date": null,
+      "fallback_reason": null,
+      "source_name": "Northbridge environment via environment_search",
+      "source_type": "environment_snapshot",
+      "url_or_path": "Resources/policy_check_environments/adjustment1_patched_build.json",
+      "retrieved_at": "2026-10-12T20:01:24-04:00",
+      "retrieval_mode": "simulated",
+      "scenario_evidence_ids": [
+        "S01",
+        "S02",
+        "S05"
+      ]
+    },
+    {
+      "evidence_id": "E4",
+      "fact": "There are 4 hosts for this asset.",
+      "locator": "assets[asset_id=W01].data.count",
+      "tool_call_id": "T2",
+      "published_date": null,
+      "last_modified_date": null,
+      "fallback_reason": null,
+      "source_name": "Northbridge environment via environment_search",
+      "source_type": "environment_snapshot",
+      "url_or_path": "Resources/policy_check_environments/adjustment1_patched_build.json",
+      "retrieved_at": "2026-10-12T20:01:24-04:00",
+      "retrieval_mode": "simulated",
+      "scenario_evidence_ids": [
+        "S01",
+        "S02",
+        "S05"
+      ]
+    },
+    {
+      "evidence_id": "E5",
+      "fact": "The asset is located at HQ (2) and RECOVERY (2).",
+      "locator": "assets[asset_id=W01].data.sites",
+      "tool_call_id": "T2",
+      "published_date": null,
+      "last_modified_date": null,
+      "fallback_reason": null,
+      "source_name": "Northbridge environment via environment_search",
+      "source_type": "environment_snapshot",
+      "url_or_path": "Resources/policy_check_environments/adjustment1_patched_build.json",
+      "retrieved_at": "2026-10-12T20:01:24-04:00",
+      "retrieval_mode": "simulated",
+      "scenario_evidence_ids": [
+        "S01",
+        "S02",
+        "S05"
+      ]
+    },
+    {
+      "evidence_id": "E6",
+      "fact": "The asset is Tier 0.",
+      "locator": "assets[asset_id=W01].data.tier",
+      "tool_call_id": "T2",
+      "published_date": null,
+      "last_modified_date": null,
+      "fallback_reason": null,
+      "source_name": "Northbridge environment via environment_search",
+      "source_type": "environment_snapshot",
+      "url_or_path": "Resources/policy_check_environments/adjustment1_patched_build.json",
+      "retrieved_at": "2026-10-12T20:01:24-04:00",
+      "retrieval_mode": "simulated",
+      "scenario_evidence_ids": [
+        "S01",
+        "S02",
+        "S05"
+      ]
+    },
+    {
+      "evidence_id": "E7",
+      "fact": "The operating system is Windows Server 2022.",
+      "locator": "assets[asset_id=W01].data.platform.os",
+      "tool_call_id": "T2",
+      "published_date": null,
+      "last_modified_date": null,
+      "fallback_reason": null,
+      "source_name": "Northbridge environment via environment_search",
+      "source_type": "environment_snapshot",
+      "url_or_path": "Resources/policy_check_environments/adjustment1_patched_build.json",
+      "retrieved_at": "2026-10-12T20:01:24-04:00",
+      "retrieval_mode": "simulated",
+      "scenario_evidence_ids": [
+        "S01",
+        "S02",
+        "S05"
+      ]
+    },
+    {
+      "evidence_id": "E8",
+      "fact": "The OS build is 10.0.20348.5631.",
+      "locator": "assets[asset_id=W01].data.platform.os_build",
+      "tool_call_id": "T2",
+      "published_date": null,
+      "last_modified_date": null,
+      "fallback_reason": null,
+      "source_name": "Northbridge environment via environment_search",
+      "source_type": "environment_snapshot",
+      "url_or_path": "Resources/policy_check_environments/adjustment1_patched_build.json",
+      "retrieved_at": "2026-10-12T20:01:24-04:00",
+      "retrieval_mode": "simulated",
+      "scenario_evidence_ids": [
+        "S01",
+        "S02",
+        "S05"
+      ]
+    },
+    {
+      "evidence_id": "E9",
+      "fact": "The network zone is IDENTITY.",
+      "locator": "assets[asset_id=W01].data.zone",
+      "tool_call_id": "T2",
+      "published_date": null,
+      "last_modified_date": null,
+      "fallback_reason": null,
+      "source_name": "Northbridge environment via environment_search",
+      "source_type": "environment_snapshot",
+      "url_or_path": "Resources/policy_check_environments/adjustment1_patched_build.json",
+      "retrieved_at": "2026-10-12T20:01:24-04:00",
+      "retrieval_mode": "simulated",
+      "scenario_evidence_ids": [
+        "S01",
+        "S02",
+        "S05"
+      ]
+    },
+    {
+      "evidence_id": "E10",
+      "fact": "The search for 'DNS Server' matched only asset W01 out of 44 assets searched.",
+      "locator": "coverage",
+      "tool_call_id": "T5",
+      "published_date": null,
+      "last_modified_date": null,
+      "fallback_reason": null,
+      "source_name": "Northbridge environment via environment_search",
+      "source_type": "environment_snapshot",
+      "url_or_path": "Resources/policy_check_environments/adjustment1_patched_build.json",
+      "retrieved_at": "2026-10-12T20:01:24-04:00",
+      "retrieval_mode": "simulated",
+      "scenario_evidence_ids": [
+        "S06"
+      ]
+    },
+    {
+      "evidence_id": "E11",
+      "fact": "The CVE ID is CVE-2026-69730.",
+      "locator": "cve_id",
+      "tool_call_id": "T1",
+      "published_date": "2026-09-08",
+      "last_modified_date": "2026-10-08",
+      "fallback_reason": null,
+      "source_name": "CVE Program (cvelistV5) via lookup_vulnerability",
+      "source_type": "cve_record",
+      "url_or_path": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:01:22-04:00",
+      "retrieval_mode": "live"
+    },
+    {
+      "evidence_id": "E12",
+      "fact": "The vulnerability is titled Windows DNS Server Remote Code Execution Vulnerability.",
+      "locator": "title",
+      "tool_call_id": "T1",
+      "published_date": "2026-09-08",
+      "last_modified_date": "2026-10-08",
+      "fallback_reason": null,
+      "source_name": "CVE Program (cvelistV5) via lookup_vulnerability",
+      "source_type": "cve_record",
+      "url_or_path": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:01:22-04:00",
+      "retrieval_mode": "live"
+    },
+    {
+      "evidence_id": "E13",
+      "fact": "The affected component is Windows DNS.",
+      "locator": "description",
+      "tool_call_id": "T1",
+      "published_date": "2026-09-08",
+      "last_modified_date": "2026-10-08",
+      "fallback_reason": null,
+      "source_name": "CVE Program (cvelistV5) via lookup_vulnerability",
+      "source_type": "cve_record",
+      "url_or_path": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:01:22-04:00",
+      "retrieval_mode": "live"
+    },
+    {
+      "evidence_id": "E14",
+      "fact": "The fixed build for Windows Server 2022 is 10.0.20348.5622.",
+      "locator": "affected[product='Windows Server 2022'].fixed_build",
+      "tool_call_id": "T1",
+      "published_date": "2026-09-08",
+      "last_modified_date": "2026-10-08",
+      "fallback_reason": null,
+      "source_name": "CVE Program (cvelistV5) via lookup_vulnerability",
+      "source_type": "cve_record",
+      "url_or_path": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:01:22-04:00",
+      "retrieval_mode": "live"
+    },
+    {
+      "evidence_id": "E15",
+      "fact": "The CVSS version is 3.1.",
+      "locator": "cvss.version",
+      "tool_call_id": "T1",
+      "published_date": "2026-09-08",
+      "last_modified_date": "2026-10-08",
+      "fallback_reason": null,
+      "source_name": "CVE Program (cvelistV5) via lookup_vulnerability",
+      "source_type": "cve_record",
+      "url_or_path": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:01:22-04:00",
+      "retrieval_mode": "live"
+    },
+    {
+      "evidence_id": "E16",
+      "fact": "The base score is 9.8.",
+      "locator": "cvss.base_score",
+      "tool_call_id": "T1",
+      "published_date": "2026-09-08",
+      "last_modified_date": "2026-10-08",
+      "fallback_reason": null,
+      "source_name": "CVE Program (cvelistV5) via lookup_vulnerability",
+      "source_type": "cve_record",
+      "url_or_path": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:01:22-04:00",
+      "retrieval_mode": "live"
+    },
+    {
+      "evidence_id": "E17",
+      "fact": "The base severity is Critical.",
+      "locator": "cvss.base_severity",
+      "tool_call_id": "T1",
+      "published_date": "2026-09-08",
+      "last_modified_date": "2026-10-08",
+      "fallback_reason": null,
+      "source_name": "CVE Program (cvelistV5) via lookup_vulnerability",
+      "source_type": "cve_record",
+      "url_or_path": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:01:22-04:00",
+      "retrieval_mode": "live"
+    },
+    {
+      "evidence_id": "E18",
+      "fact": "The CVSS vector is CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H/E:U/RL:O/RC:C.",
+      "locator": "cvss.vector",
+      "tool_call_id": "T1",
+      "published_date": "2026-09-08",
+      "last_modified_date": "2026-10-08",
+      "fallback_reason": null,
+      "source_name": "CVE Program (cvelistV5) via lookup_vulnerability",
+      "source_type": "cve_record",
+      "url_or_path": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:01:22-04:00",
+      "retrieval_mode": "live"
+    },
+    {
+      "evidence_id": "E19",
+      "fact": "The source is microsoft (CNA) via CVE record.",
+      "locator": "cvss.source",
+      "tool_call_id": "T1",
+      "published_date": "2026-09-08",
+      "last_modified_date": "2026-10-08",
+      "fallback_reason": null,
+      "source_name": "CVE Program (cvelistV5) via lookup_vulnerability",
+      "source_type": "cve_record",
+      "url_or_path": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:01:22-04:00",
+      "retrieval_mode": "live"
+    },
+    {
+      "evidence_id": "E20",
+      "fact": "Windows Server 2022 is listed as an affected product.",
+      "locator": "affected",
+      "tool_call_id": "T1",
+      "published_date": "2026-09-08",
+      "last_modified_date": "2026-10-08",
+      "fallback_reason": null,
+      "source_name": "CVE Program (cvelistV5) via lookup_vulnerability",
+      "source_type": "cve_record",
+      "url_or_path": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:01:22-04:00",
+      "retrieval_mode": "live"
+    }
+  ],
+  "assumptions": [],
+  "unknowns": [],
+  "confidence": {
+    "level": "High",
+    "explanation": "Confidence is High because every factor used to reach the decision is cited to a validated source, including the asset's current build and the vendor's fixed build version. Policy basis: every factor is cited to a source."
+  },
+  "action": {
+    "recommended_next_step": "No remediation action is required for this CVE on asset W01. Verify that the build version is consistent across all 4 hosts in the asset group.",
+    "priority": "Low",
+    "owner": "System Administrator",
+    "interim_measures": [],
+    "evidence_to_resolve": [
+      {
+        "evidence_needed": "OS build version < 10.0.20348.5622",
+        "effect_on_decision": "C3 = true -> Rating would increase based on likelihood and impact (Tier 0 asset)."
+      }
+    ]
+  },
+  "tool_trace": [
+    {
+      "call_id": "T1",
+      "tool": "lookup_vulnerability",
+      "selected_by": "model",
+      "arguments": {
+        "cve_id": "CVE-2026-69730"
+      },
+      "result_status": "found",
+      "mode": "live",
+      "attempts": 1,
+      "fallback_used": false,
+      "result_summary": "CVE-2026-69730: CVE live, NVD live; CVSS 9.8; 0 conflict(s)",
+      "raw_output_path": "model_outputs_and_assessments/adjustment1_patched_build/tool_outputs/T1.json",
+      "evidence_ids": [
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20"
+      ],
+      "error": null,
+      "model_call_id": "call_clp2qvc8",
+      "started_at": "2026-10-12T20:01:21-04:00",
+      "finished_at": "2026-10-12T20:01:24-04:00",
+      "output_sha256": "9ae49d3a872608135f3a4a1a6ecd2e99f161e13096a3f654904012aa4e598fbb",
+      "receipts": [
+        {
+          "source": "cve",
+          "status": "ok",
+          "mode": "live",
+          "url": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+          "retrieved_at": "2026-10-12T20:01:22-04:00",
+          "attempts": 1,
+          "fallback_reason": null,
+          "error": null,
+          "http_status": 200,
+          "final_url": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+          "bytes": 6740,
+          "sha256": "6583e4e985a8f97cf57ba5ee81ce5d42ba9f5c6831e699317978ef20577e160d",
+          "elapsed_ms": 952
+        },
+        {
+          "source": "nvd",
+          "status": "ok",
+          "mode": "live",
+          "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2026-69730",
+          "retrieved_at": "2026-10-12T20:01:24-04:00",
+          "attempts": 1,
+          "fallback_reason": null,
+          "error": null,
+          "http_status": 200,
+          "final_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2026-69730",
+          "bytes": 6183,
+          "sha256": "f25aa87f2baf623b9d00dd4889d91453402ec7a78d2aa5dae7ef0993a1b6edfb",
+          "elapsed_ms": 1687
+        }
+      ]
+    },
+    {
+      "call_id": "T2",
+      "tool": "environment_search",
+      "selected_by": "model",
+      "arguments": {
+        "query": "W01",
+        "query_type": "asset"
+      },
+      "result_status": "found",
+      "mode": "simulated",
+      "attempts": 1,
+      "fallback_used": false,
+      "result_summary": "asset 'W01': 1 match(es); matching assets ['W01'] of 44",
+      "raw_output_path": "model_outputs_and_assessments/adjustment1_patched_build/tool_outputs/T2.json",
+      "evidence_ids": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E7",
+        "E8",
+        "E9"
+      ],
+      "error": null,
+      "model_call_id": "call_707nnlbx",
+      "started_at": "2026-10-12T20:01:24-04:00",
+      "finished_at": "2026-10-12T20:01:24-04:00",
+      "output_sha256": "2754bdac3aebe61e1627c3d9d54d0ba3f6c2ea498cd45871e9e3d9b53f26097d",
+      "receipts": []
+    },
+    {
+      "call_id": "T3",
+      "tool": "environment_search",
+      "selected_by": "model",
+      "arguments": {
+        "query": "W01",
+        "query_type": "flows"
+      },
+      "result_status": "found",
+      "mode": "simulated",
+      "attempts": 1,
+      "fallback_used": false,
+      "result_summary": "flows 'W01': 6 match(es)",
+      "raw_output_path": "model_outputs_and_assessments/adjustment1_patched_build/tool_outputs/T3.json",
+      "evidence_ids": [],
+      "error": null,
+      "model_call_id": "call_gi44n8yi",
+      "started_at": "2026-10-12T20:01:24-04:00",
+      "finished_at": "2026-10-12T20:01:24-04:00",
+      "output_sha256": "ac3cdd0150899f05e57c48a7e9f6f22d1337a8c4ee85bae63804b9692199f150",
+      "receipts": []
+    },
+    {
+      "call_id": "T4",
+      "tool": "environment_search",
+      "selected_by": "model",
+      "arguments": {
+        "query": "W01",
+        "query_type": "business_service"
+      },
+      "result_status": "found",
+      "mode": "simulated",
+      "attempts": 1,
+      "fallback_used": false,
+      "result_summary": "business_service 'W01': 1 match(es)",
+      "raw_output_path": "model_outputs_and_assessments/adjustment1_patched_build/tool_outputs/T4.json",
+      "evidence_ids": [],
+      "error": null,
+      "model_call_id": "call_ryjdv0mp",
+      "started_at": "2026-10-12T20:01:24-04:00",
+      "finished_at": "2026-10-12T20:01:24-04:00",
+      "output_sha256": "60b570bcca8f96d664894073d9638a6e8f946db8944fd667240129425a4b95b8",
+      "receipts": []
+    },
+    {
+      "call_id": "T5",
+      "tool": "environment_search",
+      "selected_by": "model",
+      "arguments": {
+        "query": "DNS Server",
+        "query_type": "text"
+      },
+      "result_status": "found",
+      "mode": "simulated",
+      "attempts": 1,
+      "fallback_used": false,
+      "result_summary": "text 'DNS Server': 3 match(es); matching assets ['W01'] of 44",
+      "raw_output_path": "model_outputs_and_assessments/adjustment1_patched_build/tool_outputs/T5.json",
+      "evidence_ids": [
+        "E10"
+      ],
+      "error": null,
+      "model_call_id": "call_bf5ymo7w",
+      "started_at": "2026-10-12T20:01:24-04:00",
+      "finished_at": "2026-10-12T20:01:24-04:00",
+      "output_sha256": "92d93a1cea0b4a2923d9f33f147e972a55c7efce116b97d155caa2b5edb1e69f",
+      "receipts": []
+    },
+    {
+      "call_id": "T6",
+      "tool": "lookup_kev",
+      "selected_by": "model",
+      "arguments": {
+        "cve_id": "CVE-2026-69730"
+      },
+      "result_status": "not_found",
+      "mode": "live",
+      "attempts": 1,
+      "fallback_used": false,
+      "result_summary": "CVE-2026-69730 is not in KEV (catalog 2026.10.08, live)",
+      "raw_output_path": "model_outputs_and_assessments/adjustment1_patched_build/tool_outputs/T6.json",
+      "evidence_ids": [],
+      "error": null,
+      "model_call_id": "call_2i2b2dx3",
+      "started_at": "2026-10-12T20:01:24-04:00",
+      "finished_at": "2026-10-12T20:01:25-04:00",
+      "output_sha256": "18dfc967eaf1457c0a6f0667ca12e0933a16d4380849191fedb168cdfa39d3db",
+      "receipts": [
+        {
+          "source": "kev",
+          "status": "ok",
+          "mode": "live",
+          "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+          "retrieved_at": "2026-10-12T20:01:25-04:00",
+          "attempts": 1,
+          "fallback_reason": null,
+          "error": null,
+          "http_status": 200,
+          "final_url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+          "bytes": 1777558,
+          "sha256": "fb1621beec7db19d99c1f919dede3d4cc01ad88acd16f79f1592929c4826dfee",
+          "elapsed_ms": 1234
+        }
+      ]
+    },
+    {
+      "call_id": "T7",
+      "tool": "tavily_search",
+      "selected_by": "model",
+      "arguments": {
+        "allowed_domains": [
+          "msrc.microsoft.com",
+          "support.microsoft.com",
+          "learn.microsoft.com",
+          "cisa.gov",
+          "nvd.nist.gov",
+          "cve.org",
+          "bleepingcomputer.com"
+        ],
+        "max_results": 5,
+        "query": "CVE-2026-69730 exploit proof of concept vendor assessment patch"
+      },
+      "result_status": "found",
+      "mode": "live",
+      "attempts": 1,
+      "fallback_used": false,
+      "result_summary": "5 result(s) for 'CVE-2026-69730 exploit proof of concept vendor assessment patch'",
+      "raw_output_path": "model_outputs_and_assessments/adjustment1_patched_build/tool_outputs/T7.json",
+      "evidence_ids": [],
+      "error": null,
+      "model_call_id": "call_job5q8pp",
+      "started_at": "2026-10-12T20:01:25-04:00",
+      "finished_at": "2026-10-12T20:01:30-04:00",
+      "output_sha256": "fc81b60331cb718bc11a01d02254de0611e603641cef01a6b65c677ec8343244",
+      "receipts": [
+        {
+          "source": "tavily",
+          "status": "ok",
+          "mode": "live",
+          "url": "https://api.tavily.com/search",
+          "retrieved_at": "2026-10-12T20:01:30-04:00",
+          "attempts": 1,
+          "fallback_reason": null,
+          "error": null,
+          "http_status": 200,
+          "final_url": "https://api.tavily.com/search",
+          "bytes": 5944,
+          "sha256": "5194897d5c1b3b4a8e37773d5743a4328a5a77e5fe2e092cfbddc704b8173f08",
+          "elapsed_ms": 4375,
+          "request_id": "af0376ba-8d6a-4d00-a2d3-eced328f79c0"
+        }
+      ]
+    }
+  ],
+  "analyst_review": {
+    "status": "pending",
+    "reviewer": null,
+    "reviewed_at": null,
+    "citations_verified": null,
+    "agrees_with_rating": null,
+    "group_consensus_rating": null,
+    "notes": null
+  },
+  "validation": {
+    "schema_valid": true,
+    "checks": [
+      {
+        "check": "Output matches output_schema.json",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Every cited evidence_id exists and every evidence item is cited",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Every evidence item comes from a successful call in tool_trace",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Missing decisive facts are listed in unknowns[]",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Cached evidence has a fallback reason; environment evidence is labeled simulated",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Tool calls follow the tool contracts",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Raw tool outputs exist, match their SHA-256 and their trace entry",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Agent run saved raw outputs and a transcript, with model-selected tool calls",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Trace tool calls match structured tool calls in the model transcript",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "kev_listed matches the lookup_kev result",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Exploitability CVSS fields match the CVSS vector",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Review Needed for conflicting evidence lists the conflicts",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Decision, scores, matrix and confidence match policy.py",
+        "passed": true,
+        "detail": "ok"
+      },
+      {
+        "check": "Analyst review is pending or recorded with justification",
+        "passed": true,
+        "detail": "ok"
+      }
+    ]
+  }
+}

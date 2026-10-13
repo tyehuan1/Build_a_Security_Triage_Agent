@@ -1,0 +1,58 @@
+{
+  "call_id": "T1",
+  "tool": "lookup_vulnerability",
+  "selected_by": "model",
+  "model_call_id": "call_t4adf62z",
+  "arguments": {
+    "cve_id": "CVE-2026-69730"
+  },
+  "started_at": "2026-10-12T20:02:36-04:00",
+  "finished_at": "2026-10-12T20:02:40-04:00",
+  "status": "failed",
+  "error": "CVE: SimulatedOutage: cve unavailable (fault injection); no cached fallback: cache disabled by fault injection; NVD: SimulatedOutage: nvd unavailable (fault injection); no cached fallback: cache disabled by fault injection",
+  "result": {
+    "status": "failed",
+    "cve_id": "CVE-2026-69730",
+    "sources": [
+      {
+        "name": "CVE",
+        "url": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+        "retrieved_at": "2026-10-12T20:02:38-04:00",
+        "mode": null,
+        "status": "failed",
+        "fallback_reason": null
+      },
+      {
+        "name": "NVD",
+        "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2026-69730",
+        "retrieved_at": "2026-10-12T20:02:40-04:00",
+        "mode": null,
+        "status": "failed",
+        "fallback_reason": null
+      }
+    ]
+  },
+  "receipts": [
+    {
+      "source": "cve",
+      "status": "failed",
+      "mode": null,
+      "url": "https://cveawg.mitre.org/api/cve/CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:02:38-04:00",
+      "attempts": 2,
+      "fallback_reason": null,
+      "error": "SimulatedOutage: cve unavailable (fault injection); no cached fallback: cache disabled by fault injection"
+    },
+    {
+      "source": "nvd",
+      "status": "failed",
+      "mode": null,
+      "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2026-69730",
+      "retrieved_at": "2026-10-12T20:02:40-04:00",
+      "attempts": 2,
+      "fallback_reason": null,
+      "error": "SimulatedOutage: nvd unavailable (fault injection); no cached fallback: cache disabled by fault injection"
+    }
+  ],
+  "source_raw": {}
+}

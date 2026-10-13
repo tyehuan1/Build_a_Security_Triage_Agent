@@ -1,0 +1,58 @@
+{
+  "call_id": "T5",
+  "tool": "lookup_kev",
+  "selected_by": "model",
+  "model_call_id": "call_a3i4svy5",
+  "arguments": {
+    "cve_id": "CVE-2026-69730"
+  },
+  "started_at": "2026-10-12T20:16:10-04:00",
+  "finished_at": "2026-10-12T20:16:10-04:00",
+  "status": "not_found",
+  "error": null,
+  "result": {
+    "status": "not_found",
+    "in_kev": false,
+    "date_added": null,
+    "known_ransomware_use": null,
+    "required_action": null,
+    "due_date": null,
+    "cve_id": "CVE-2026-69730",
+    "source_url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+    "retrieved_at": "2026-10-12T20:16:10-04:00",
+    "mode": "live",
+    "catalog": {
+      "catalog_version": "2026.10.08",
+      "date_released": "2026-10-08T20:09:18.9833Z",
+      "count": 1739
+    },
+    "fallback_reason": null,
+    "locator": "vulnerabilities[cveID=CVE-2026-69730] (no match)",
+    "note": "Absence from KEV does not establish that the CVE is not exploited."
+  },
+  "receipts": [
+    {
+      "source": "kev",
+      "status": "ok",
+      "mode": "live",
+      "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+      "retrieved_at": "2026-10-12T20:16:10-04:00",
+      "attempts": 1,
+      "fallback_reason": null,
+      "error": null,
+      "http_status": 200,
+      "final_url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+      "bytes": 1777558,
+      "sha256": "fb1621beec7db19d99c1f919dede3d4cc01ad88acd16f79f1592929c4826dfee",
+      "elapsed_ms": 483
+    }
+  ],
+  "source_raw": {
+    "kev_catalog": {
+      "catalog_version": "2026.10.08",
+      "date_released": "2026-10-08T20:09:18.9833Z",
+      "count": 1739
+    },
+    "kev_entry": null
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "call_id": "T7",
+  "tool": "tavily_search",
+  "selected_by": "model",
+  "model_call_id": "call_g069v4wq",
+  "arguments": {
+    "allowed_domains": [
+      "msrc.microsoft.com",
+      "support.microsoft.com",
+      "learn.microsoft.com",
+      "cisa.gov",
+      "nvd.nist.gov",
+      "cve.org",
+      "zerodayinitiative.com",
+      "rapid7.com",
+      "tenable.com",
+      "crowdstrike.com",
+      "unit42.paloaltonetworks.com",
+      "securelist.com",
+      "bleepingcomputer.com"
+    ],
+    "max_results": 5,
+    "query": "CVE-2026-69730 Windows DNS Server remote code execution exploit patch KB"
+  },
+  "started_at": "2026-10-12T20:02:43-04:00",
+  "finished_at": "2026-10-12T20:02:45-04:00",
+  "status": "found",
+  "error": null,
+  "result": {
+    "status": "found",
+    "results": [
+      {
+        "title": "Microsoft September 2026 Patch Tuesday fixes 966 flaws, 2 zero-days",
+        "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-september-2026-patch-tuesday-fixes-966-flaws-2-zero-days",
+        "snippet": "| Windows DNS | CVE-2026-69813 | Windows DNS Server Remote Code Execution Vulnerability | Critical |\n| Windows DNS | CVE-2026-72928 | Windows DNS Server Remote Code Execution Vulnerability | Important |\n| Windows DNS | CVE-2026-69730 | Windows DNS Server Remote Code Execution Vulnerability | Critical |\n| Windows DNS | CVE-2026-72948 | Windows DNS Elevation of Privilege Vulnerability | Important |\n| Windows DNS | CVE-2026-78523 | Windows DNS Server Denial of Service Vulnerability | Important | [...] | Role: DNS Server | CVE-2026-77505 | Windows DNS Server Remote Code Execution Vulnerability | Critical |\n| Role: DNS Server | CVE-2026-69782 | Windows DNS Server Remote Code Execution Vulnerability | Important |\n| Role: Windows Fax Service | CVE-2026-69621 | Role: Windows Fax Service Elevation of Privilege Vulnerability | Important |\n| Role: Windows Fax Service | CVE-2026-72944 | Role: Windows Fax Service Elevation of Privilege Vulnerability | Important | [...] | Windows DNS | CVE-2026-69680 | Windows DNS Spoofing Vulnerability | Important |\n| Windows DNS | CVE-2026-69672 | Windows DNS Information Disclosure Vulnerability | Important |\n| Windows DNS | CVE-2026-70091 | Windows DNS Denial",
+        "published_date": null,
+        "score": 0.767847
+      }
+    ],
+    "query": "CVE-2026-69730 Windows DNS Server remote code execution exploit patch KB",
+    "allowed_domains": [
+      "msrc.microsoft.com",
+      "support.microsoft.com",
+      "learn.microsoft.com",
+      "cisa.gov",
+      "nvd.nist.gov",
+      "cve.org",
+      "zerodayinitiative.com",
+      "rapid7.com",
+      "tenable.com",
+      "crowdstrike.com",
+      "unit42.paloaltonetworks.com",
+      "securelist.com",
+      "bleepingcomputer.com"
+    ],
+    "retrieved_at": "2026-10-12T20:02:45-04:00",
+    "mode": "live",
+    "request_id": "61176df0-2b7a-4d4a-ac62-a6f7a4885f35",
+    "dropped_off_allowlist": 0
+  },
+  "receipts": [
+    {
+      "source": "tavily",
+      "status": "ok",
+      "mode": "live",
+      "url": "https://api.tavily.com/search",
+      "retrieved_at": "2026-10-12T20:02:45-04:00",
+      "attempts": 1,
+      "fallback_reason": null,
+      "error": null,
+      "http_status": 200,
+      "final_url": "https://api.tavily.com/search",
+      "bytes": 1957,
+      "sha256": "8ce0d8d66fe4994c2eadbfe8d7a9f702e4b95f58c63bf91f34271e7802a2a588",
+      "elapsed_ms": 1766,
+      "request_id": "61176df0-2b7a-4d4a-ac62-a6f7a4885f35"
+    }
+  ],
+  "source_raw": {
+    "tavily": {
+      "query": "CVE-2026-69730 Windows DNS Server remote code execution exploit patch KB",
+      "follow_up_questions": null,
+      "answer": null,
+      "images": [],
+      "results": [
+        {
+          "url": "https://www.bleepingcomputer.com/news/microsoft/microsoft-september-2026-patch-tuesday-fixes-966-flaws-2-zero-days",
+          "title": "Microsoft September 2026 Patch Tuesday fixes 966 flaws, 2 zero-days",
+          "content": "| Windows DNS | CVE-2026-69813 | Windows DNS Server Remote Code Execution Vulnerability | Critical |\n| Windows DNS | CVE-2026-72928 | Windows DNS Server Remote Code Execution Vulnerability | Important |\n| Windows DNS | CVE-2026-69730 | Windows DNS Server Remote Code Execution Vulnerability | Critical |\n| Windows DNS | CVE-2026-72948 | Windows DNS Elevation of Privilege Vulnerability | Important |\n| Windows DNS | CVE-2026-78523 | Windows DNS Server Denial of Service Vulnerability | Important | [...] | Role: DNS Server | CVE-2026-77505 | Windows DNS Server Remote Code Execution Vulnerability | Critical |\n| Role: DNS Server | CVE-2026-69782 | Windows DNS Server Remote Code Execution Vulnerability | Important |\n| Role: Windows Fax Service | CVE-2026-69621 | Role: Windows Fax Service Elevation of Privilege Vulnerability | Important |\n| Role: Windows Fax Service | CVE-2026-72944 | Role: Windows Fax Service Elevation of Privilege Vulnerability | Important | [...] | Windows DNS | CVE-2026-69680 | Windows DNS Spoofing Vulnerability | Important |\n| Windows DNS | CVE-2026-69672 | Windows DNS Information Disclosure Vulnerability | Important |\n| Windows DNS | CVE-2026-70091 | Windows DNS Denial of Service Vulnerability | Important |\n| Windows DNS | CVE-2026-72987 | Windows DNS Remote Code Execution Vulnerability | Critical |\n| Windows DWM Core Library | CVE-2026-69775 | Windows DWM Core Library Elevation of Privilege Vulnerability | Important |",
+          "score": 0.767847,
+          "raw_content": null,
+          "id": "ff52bb-00"
+        }
+      ],
+      "response_time": 1.13,
+      "request_id": "61176df0-2b7a-4d4a-ac62-a6f7a4885f35"
+    }
+  }
+}

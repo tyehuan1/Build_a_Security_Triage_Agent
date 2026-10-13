@@ -110,10 +110,7 @@ def check_citations(facts: dict, ev: Evidence) -> list[str]:
             problems.append(f"{path}: asserts a value but has no citations")
 
     need(facts["asset"], "asset", facts["asset"].get("operating_system") is not None)
-    need(facts["scope_check"], "scope_check", True)
-    if facts["scope_check"]["citations"] and not any(
-            ev.trace.get(c["call_id"], {}).get("tool") == "environment_search" for c in facts["scope_check"]["citations"]):
-        problems.append("scope_check: must cite an environment_search result (the coverage of other assets)")
+    need(facts["scope_check"], "scope_check", not _scope_unknown(facts))
     need(facts["threat"], "threat", bool(facts["threat"].get("fix", {}).get("fixed_build")))
     need(facts["technical_severity"], "technical_severity", facts["technical_severity"].get("vector") is not None)
     for c in facts["conditions"]:
@@ -247,6 +244,26 @@ def check_conditions(facts: dict, ev: Evidence, intake: dict, settings: dict) ->
     return problems
 
 
+def check_scope(facts: dict, ev: Evidence, settings: dict) -> list[str]:
+    """The 'no other asset runs the service' claim must rest on a text search for that service.
+    The coverage block of an asset-ID lookup only says which assets matched the ID."""
+    if _scope_unknown(facts):
+        return []
+    svc = settings["inputs"]["vulnerable_service"].lower()
+    for c in facts["scope_check"]["citations"]:
+        t = ev.trace.get(c["call_id"], {})
+        args = t.get("arguments") or {}
+        if t.get("tool") == "environment_search" and args.get("query_type") == "text" and svc in str(args.get("query", "")).lower():
+            return []
+    return [f"scope_check: must cite an environment_search text search for '{settings['inputs']['vulnerable_service']}' "
+            "(its coverage lists every asset running the service); an asset-ID lookup does not show this. "
+            "If no such search was run, set scope_check.result to start with 'Unknown' and leave citations empty."]
+
+
+def _scope_unknown(facts: dict) -> bool:
+    return facts["scope_check"]["result"].strip().lower().startswith("unknown")
+
+
 def check_plausibility(facts: dict, ev: Evidence, intake: dict) -> list[str]:
     problems = []
     reach = facts["likelihood"]["reachability"]["value"]
@@ -266,6 +283,7 @@ def validate_facts(facts: dict, trace: list[dict], intake: dict, settings: dict)
     for check in (lambda: check_citations(facts, ev), lambda: check_asset(facts, ev, intake),
                   lambda: check_threat(facts, ev, intake), lambda: check_exploit_activity(facts, ev),
                   lambda: check_impact(facts, ev, intake), lambda: check_conditions(facts, ev, intake, settings),
+                  lambda: check_scope(facts, ev, settings),
                   lambda: check_plausibility(facts, ev, intake)):
         problems += check()
     return problems

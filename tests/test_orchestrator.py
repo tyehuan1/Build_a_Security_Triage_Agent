@@ -143,8 +143,9 @@ def test_complete_run_gives_insufficient_evidence_with_provisional_high(env_sett
     assert (e_web["source_type"], e_web["url_or_path"]) == ("vendor_advisory", MSRC_URL)
     # run record
     run_dir = result["run_dir"]
-    for name in ("config.json", "prompts.json", "inputs.json", "run_log.jsonl", "model_transcript.jsonl", "assessment.json"):
-        assert (run_dir / name).is_file(), name
+    assert (run_dir / "assessment.json").is_file()
+    for name in ("config.json", "prompts.json", "inputs.json", "run_log.jsonl", "model_transcript.jsonl"):
+        assert (run_dir / "other_info" / name).is_file(), name
     assert len(list((run_dir / "tool_outputs").glob("T*.json"))) == 7
     # the model saw each tool result tagged with its call ID
     tool_msgs = [m for m in llm.requests[1]["messages"] if m["role"] == "tool"]
@@ -166,6 +167,13 @@ def test_fabricated_tool_output_is_rejected_and_never_becomes_evidence(env_setti
 def test_result_prefix_on_locators_is_accepted(env_settings, tmp_path):
     f = good_facts()
     f["technical_severity"]["citations"] = [cit("T1", "result.cvss.vector", "CVSS vector.")]
+    result, _ = run(env_settings, tmp_path, *plan_script(), f, explanation())
+    assert result["assessment"]["run_metadata"]["fact_validation"]["attempts"][0]["passed"] is True
+
+
+def test_scope_unknown_without_a_service_search_is_accepted(env_settings, tmp_path):
+    f = good_facts()
+    f["scope_check"].update(result="Unknown: no search for DNS Server across assets was run.", citations=[])
     result, _ = run(env_settings, tmp_path, *plan_script(), f, explanation())
     assert result["assessment"]["run_metadata"]["fact_validation"]["attempts"][0]["passed"] is True
 
@@ -200,6 +208,8 @@ def test_fact_not_returned_by_tools_twice_gives_review_needed(env_settings, tmp_
     (lambda f: f["asset"].update(os_build="10.0.20348.100"), "os_build"),
     (lambda f: f["conditions"][0]["citations"].__setitem__(0, cit("T5", "assets[asset_id=W01]", "x")), "does not point inside"),
     (lambda f: f["scope_check"].update(citations=[cit("T1", "affected", "x")]), "scope_check: must cite an environment_search"),
+    # the coverage of an asset-ID lookup (T2) only shows which assets matched the ID, not who runs DNS Server
+    (lambda f: f["scope_check"].update(citations=[cit("T2", "coverage", "Only W01 matched.")]), "text search for 'DNS Server'"),
 ])
 def test_fact_checks_catch_unsupported_facts(env_settings, tmp_path, mutate, expect):
     bad = good_facts()
@@ -262,6 +272,15 @@ def test_malformed_cve_stops_at_intake_without_calling_the_model(env_settings, t
     env_settings["inputs"]["cve_id"] = "CVE-26-1"
     result, llm = run(env_settings, tmp_path)
     assert (result["status"], result["stage"]) == ("stopped", "intake") and llm.requests == []
+
+
+def test_placeholder_folder_is_used_but_a_previous_run_is_never_overwritten(env_settings, tmp_path):
+    (tmp_path / "test-run").mkdir()
+    (tmp_path / "test-run" / ".gitkeep").touch()
+    result, _ = run(env_settings, tmp_path, *plan_script(), good_facts(), explanation())
+    assert result["status"] == "completed" and not (tmp_path / "test-run" / ".gitkeep").exists()
+    with pytest.raises(FileExistsError):
+        run(env_settings, tmp_path, *plan_script(), good_facts(), explanation())
 
 
 def test_missing_environment_file_stops_at_intake(env_settings, tmp_path):

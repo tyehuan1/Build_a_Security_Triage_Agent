@@ -83,8 +83,15 @@ def test_excerpt_centres_on_the_quoted_fact():
     assert "Exploitation More Likely" in out and out.startswith("... ")
 
 
+def test_excerpt_centres_list_on_the_product_named_in_the_fact():
+    affected = [{"product": f"Windows 10 Version {v}", "fixed_build": "x" * 40} for v in range(8)] + \
+               [{"product": "Windows Server 2022", "fixed_build": "10.0.20348.5622"}]
+    out = _excerpt(affected, "Windows Server 2022 is listed as an affected product.")
+    assert "Windows Server 2022" in out and "10.0.20348.5622" in out
+
+
 def test_review_sheet_on_baseline_shows_saved_values():
-    path = ROOT / "runs/baseline_assignment2/assessment.json"
+    path = ROOT / "model_outputs_and_assessments/baseline/assessment.json"
     if not path.is_file():
         pytest.skip("baseline run not present")
     a = json.loads(path.read_text(encoding="utf-8"))
@@ -104,4 +111,4 @@ def test_cli_records_review_on_a_copy(tmp_path):
     saved = json.loads(target.read_text(encoding="utf-8"))
     assert saved["analyst_review"]["status"] == "approved"
     assert all(c["passed"] for c in saved["validation"]["checks"])
-    assert (tmp_path / "review_sheet.md").is_file()
+    assert (tmp_path / "other_info" / "review_sheet.md").is_file()

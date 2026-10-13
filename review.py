@@ -1,14 +1,14 @@
 """Analyst review (design workflow step "Analyst Review", performed by a human group member).
 
-1. Writes review_sheet.md next to the assessment: the decision, conditions and scores, and every
+1. Writes other_info/review_sheet.md in the run folder: the decision, conditions and scores, and every
    evidence item with its source, locator and the value found at that locator in the saved raw
    tool output, so the reviewer can check each citation against what the tool actually returned.
 2. Records the reviewer's verdict in analyst_review and re-validates the assessment.
 
 Usage:
-    python review.py runs/<run_id>/assessment.json --sheet-only          # just write the review sheet
-    python review.py runs/<run_id>/assessment.json                       # sheet + interactive questions
-    python review.py runs/<run_id>/assessment.json --reviewer "Name" --status approved \\
+    python review.py model_outputs_and_assessments/<run_id>/assessment.json --sheet-only        # just write the review sheet
+    python review.py model_outputs_and_assessments/<run_id>/assessment.json            # sheet + interactive questions
+    python review.py model_outputs_and_assessments/<run_id>/assessment.json --reviewer "Name" --status approved \\
         --citations-verified yes --agrees yes --consensus "Insufficient Evidence" --notes "..."
 
 Rules (from the design: "Approve or override with justification"):
@@ -84,8 +84,11 @@ def _excerpt(value, fact: str = "", limit=300) -> str:
     if len(text) <= limit:
         return text
     lower = text.lower()
-    anchors = re.findall(r"'([^']{4,})'|\"([^\"]{4,})\"", fact)
-    candidates = [a or b for a, b in anchors] + sorted(re.findall(r"[A-Za-z0-9.\-]{6,}", fact), key=len, reverse=True)
+    quoted = [a or b for a, b in re.findall(r"'([^']{4,})'|\"([^\"]{4,})\"", fact)]
+    words = re.findall(r"[A-Za-z0-9.\-]+", fact)
+    phrases = [" ".join(words[i:i + n]) for n in (3, 2) for i in range(len(words) - n + 1)]  # e.g. "Windows Server 2022"
+    singles = sorted((w for w in words if len(w) >= 6), key=len, reverse=True)
+    candidates = quoted + phrases + singles
     pos = next((lower.find(c.lower()) for c in candidates if lower.find(c.lower()) >= 0), 0)
     start = max(0, pos - limit // 3)
     return ("... " if start else "") + text[start:start + limit] + (" ..." if start + limit < len(text) else "")
@@ -119,7 +122,9 @@ def review_sheet(a: dict) -> str:
         for adj in im["adjustments"]:
             lines.append(f"- {adj['id']}: {adj['rule']} - input {adj['input_value']} ({adj['input_status']}); {adj.get('note', '')}")
     lines += ["", "## Evidence - check each citation against the saved tool output", "",
-              "| ID | Fact (model) | Source | Mode | Locator | Value at locator in saved output | Raw output |", "|---|---|---|---|---|---|---|"]
+              "Fill the OK? column with Y (value supports the fact) or N (it does not - note why).", "",
+              "| ID | Fact (model) | Source | Mode | Locator | Value at locator in saved output | Raw output | OK? |",
+              "|---|---|---|---|---|---|---|---|"]
     for e in a["evidence"]:
         t = trace[e["tool_call_id"]]
         try:
@@ -130,7 +135,7 @@ def review_sheet(a: dict) -> str:
             f"(not resolvable; see {e['tool_call_id']} summary: {t['result_summary']})"
         cell = lambda s: str(s).replace("|", "\\|").replace("\n", " ")
         lines.append(f"| {e['evidence_id']} | {cell(e['fact'])} | {cell(e['source_name'])}<br>{cell(e['url_or_path'])} | "
-                     f"{e['retrieval_mode']} | `{cell(e['locator'])}` | {cell(shown)} | {cell(t['raw_output_path'])} |")
+                     f"{e['retrieval_mode']} | `{cell(e['locator'])}` | {cell(shown)} | {cell(t['raw_output_path'])} |   |")
     lines += ["", "## Assumptions and unknowns", ""]
     lines += [f"- {x['id']}: {x['statement']} ({x['reason']})" for x in a["assumptions"]] or ["- No assumptions recorded."]
     lines += [f"- {u['id']}{' (decisive)' if u['decisive'] else ''}: {u['question']} - {u['how_to_resolve']}" for u in a["unknowns"]]
@@ -195,7 +200,8 @@ def main() -> int:
     args = ap.parse_args()
 
     a = json.loads(args.assessment.read_text(encoding="utf-8"))
-    sheet = args.assessment.parent / "review_sheet.md"
+    sheet = args.assessment.parent / "other_info" / "review_sheet.md"
+    sheet.parent.mkdir(exist_ok=True)
     sheet.write_text(review_sheet(a), encoding="utf-8")
     print(f"Review sheet written: {sheet}")
     if args.sheet_only:

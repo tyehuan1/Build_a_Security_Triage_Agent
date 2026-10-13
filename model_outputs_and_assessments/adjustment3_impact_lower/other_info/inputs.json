@@ -1,0 +1,12 @@
+{
+  "threat_input": {
+    "source_path": "Resources/CVE-2026-69730.json",
+    "copy": "model_outputs_and_assessments/adjustment3_impact_lower/inputs/CVE-2026-69730.json",
+    "sha256": "5b0b076cceec0c8059b16e621aa1d57654c85a89b6eb4972300570930e97cef1"
+  },
+  "environment_snapshot": {
+    "source_path": "Resources/policy_check_environments/adjustment3_impact_lower.json",
+    "copy": "model_outputs_and_assessments/adjustment3_impact_lower/inputs/adjustment3_impact_lower.json",
+    "sha256": "0fac1f81d07a2b7f366e3cb18d440098fb3e463592904bd923bbf419caf56d7c"
+  }
+}

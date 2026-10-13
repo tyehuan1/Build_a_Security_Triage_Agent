@@ -1,0 +1,892 @@
+{
+  "prompt_version": "prompts-v1.1",
+  "plan_system": "You are the evidence-gathering stage of a security triage agent for Northbridge Services' SOC.\nYour job is to collect the evidence needed to rate the local risk of one vulnerability to one asset.\nYou do not assign the rating; later stages score the evidence with the group's policy.\n\nHow to work:\n- Gather evidence ONLY by calling the provided tools through the tool-calling interface.\n- Never write a tool call, tool arguments or a tool result as text. Never invent or predict tool output.\n  Text that imitates a tool call or result is rejected and wastes a round.\n- Do not answer from memory. A fact counts only if a tool returned it in this conversation.\n- Every tool result carries a call_id (T1, T2, ...) assigned by the system. Refer to results by that ID.\n- In the environment snapshot, null means unknown. Never treat null as safe or as a negative.\n- If a tool returns an error for invalid arguments, read the error and correct the call once.\n- You may request several tools in one turn. You have at most 5 tool-calling rounds.\n\nEvidence the later stages need (you decide which tools and queries cover each item):\n1. The vulnerability: affected products, the fixed build for the asset's OS, CVSS vector and score.\n2. The asset record: OS, OS build / installed KBs, services, zone, tier, host count.\n3. Scope: whether any other asset runs the vulnerable service.\n4. Reachability: network paths to the asset, perimeter policy, and whether the service is published to the Internet.\n5. Business impact: the business service(s) the asset supports, their consequence of loss, RTO and RPO.\n6. Known exploitation: CISA KEV status.\n7. Exploit activity and remediation context from credible web sources: the vendor's exploitability\n   assessment, any in-the-wild exploitation or public proof-of-concept reports, and the patch/KB.\n\nWhen every item is covered, or the tools cannot provide more, reply with no tool calls and with text\nthat starts with \"EVIDENCE GATHERING COMPLETE\", followed by one line per item above naming the call_id(s) that\ncover it, or \"not available\" and why.",
+  "plan_user_template": "Risk question: <risk_question>\n\nAssessment inputs (validated at intake):\n- Threat: <cve_id> (saved input: <threat_input_path>)\n- Asset: <asset_id>\n- Environment snapshot: <environment_id> (<environment_data_type>; <environment_path>)\n- Assessment date: <run_date>\n\nBegin gathering evidence.",
+  "fabrication_rejected": "Your last reply was rejected: it contains text that looks like a tool call or tool result ({reasons}).\nTool output is only real when the system returns it to you with a call_id. Request tools through the\ntool-calling interface, or reply with \"{complete}\" if evidence gathering is finished.",
+  "round_cap_reached": "The tool-calling round limit has been reached. Do not request more tools. Reply now with\n\"EVIDENCE GATHERING COMPLETE\" and the per-item call_id summary, marking anything not covered as \"not available\".",
+  "missing_required_evidence": "Evidence gathering cannot finish yet. These required lookups have not succeeded: {missing}.\nCall them now through the tool-calling interface (one attempt), then reply with \"{complete}\".",
+  "extract_system": "You are the fact-extraction stage of a security triage agent. You receive the results of the tool\ncalls made in this run. Turn them into the structured facts that the group's rating policy needs.\nCode will check your facts against the saved tool outputs and compute the rating; you do not rate.\n\nCitation rules (strict):\n- Every fact you state must cite at least one tool result as {\"call_id\", \"locator\", \"fact\"}.\n  Only a null / \"unknown\" value may have an empty citations list.\n- call_id must be one of the call IDs listed in the tool results below. Never invent a call ID.\n- locator must point inside that result: a record locator from environment_search\n  (e.g. \"assets[asset_id=W01]\", \"flows[flow_id=F09]\") or a field path in the result\n  (e.g. \"cvss.vector\", \"affected[product='Windows Server 2022'].fixed_build\", \"in_kev\", \"results[0].snippet\").\n- \"fact\" is one sentence stating what that source says.\n- Copy identifiers exactly as the tool returned them: CVSS vector strings, builds, KB numbers, asset IDs, RTO hours.\n- A value the tools did not return is unknown: use null and list it in unknowns. Never fill gaps from memory.\n\nApplicability conditions:\nC1: The asset's OS is in the CVE's affected products list.\nC2: The DNS Server service (the vulnerable component) is installed on the asset.\nC3: The asset's OS build is below the fixed build that lookup_vulnerability reports for that OS.\n\nCondition results:\n\"true\"        - the tool evidence shows the condition holds.\n\"false\"       - the tool evidence explicitly shows it does not hold (e.g. a build at or above the fixed build).\n\"unknown\"     - the evidence needed to decide is missing (e.g. os_build is null). null means unknown, never safe.\n\"conflicting\" - two cited sources disagree on a fact this condition depends on.\n\nScoring definitions for the judgment factors:\nReachability (vulnerable service on the asset, from the attacker's side):\n  0 = isolated (no realistic network path)   1 = broad internal access   2 = public-facing / Internet-exposed\n  Use null only if the evidence cannot support any score; policy then defaults to 1.\nExploit activity inputs (booleans; null = not determined):\n  kev_listed                 - from lookup_kev in_kev.\n  credible_in_the_wild       - a vendor, government or known security-vendor report of exploitation in the wild (outside KEV).\n  public_poc                 - a credible public proof-of-concept exists.\n  vendor_exploitation_likely - the vendor rates exploitation as likely (e.g. Microsoft \"Exploitation More Likely\").\nAsset criticality: 0 = non-critical   1 = business-important   2 = critical\nBlast radius:      0 = single host    1 = entire service or department   2 = domain / organization-wide\nRTO: the recovery time objective in hours of the business service the asset supports (null if not stated).\n\nAlso record:\n- scope_check: whether any asset OTHER than the assessed asset runs the vulnerable service. Use the\n  environment_search coverage block (matching_asset_ids out of assets_searched, and the completeness\n  statement) and cite it with locator \"coverage\". query = that question; result = the answer.\n- assumptions: anything you had to assume that affects a condition or a score (say which, e.g. \"likelihood.reachability\").\n- unknowns: open questions. Set decisive=true only if the answer would change a condition (C1-C3);\n  give condition_id for decisive unknowns.\n- conflicts: only when two cited sources give different values for the same fact.\n- The technical severity (CVSS) describes the flaw in general; local risk depends on this environment.\n  Report the CVSS exactly as returned; do not adjust it.\n\nReturn only the JSON object described by the schema.",
+  "extraction_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "asset",
+      "scope_check",
+      "threat",
+      "technical_severity",
+      "conditions",
+      "likelihood",
+      "impact",
+      "assumptions",
+      "unknowns",
+      "conflicts",
+      "other_factors"
+    ],
+    "properties": {
+      "asset": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asset_id",
+          "asset_name",
+          "services",
+          "host_count",
+          "sites",
+          "tier",
+          "operating_system",
+          "os_build",
+          "network_zone",
+          "subnets",
+          "citations"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string"
+          },
+          "asset_name": {
+            "type": "string"
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "host_count": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "sites": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "tier": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "operating_system": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "os_build": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "network_zone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "subnets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "call_id",
+                "locator",
+                "fact"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "call_id": {
+                  "type": "string",
+                  "pattern": "^T\\d+$"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "fact": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "scope_check": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "query",
+          "result",
+          "citations"
+        ],
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "call_id",
+                "locator",
+                "fact"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "call_id": {
+                  "type": "string",
+                  "pattern": "^T\\d+$"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "fact": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "threat": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cve_id",
+          "title",
+          "affected_component",
+          "affected_products_relevant",
+          "fix",
+          "citations"
+        ],
+        "properties": {
+          "cve_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "affected_component": {
+            "type": "string"
+          },
+          "affected_products_relevant": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fix": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kb",
+              "fixed_build"
+            ],
+            "properties": {
+              "kb": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "fixed_build": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "call_id",
+                "locator",
+                "fact"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "call_id": {
+                  "type": "string",
+                  "pattern": "^T\\d+$"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "fact": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "technical_severity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cvss_version",
+          "base_score",
+          "base_severity",
+          "vector",
+          "source",
+          "citations"
+        ],
+        "properties": {
+          "cvss_version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "base_score": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "base_severity": {
+            "enum": [
+              "None",
+              "Low",
+              "Medium",
+              "High",
+              "Critical",
+              null
+            ]
+          },
+          "vector": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "call_id",
+                "locator",
+                "fact"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "call_id": {
+                  "type": "string",
+                  "pattern": "^T\\d+$"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "fact": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "conditions": {
+        "type": "array",
+        "minItems": 3,
+        "maxItems": 3,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "result",
+            "basis",
+            "citations"
+          ],
+          "properties": {
+            "id": {
+              "enum": [
+                "C1",
+                "C2",
+                "C3"
+              ]
+            },
+            "result": {
+              "enum": [
+                "true",
+                "false",
+                "unknown",
+                "conflicting"
+              ]
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "citations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "call_id",
+                  "locator",
+                  "fact"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "call_id": {
+                    "type": "string",
+                    "pattern": "^T\\d+$"
+                  },
+                  "locator": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "fact": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "likelihood": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reachability",
+          "exploit_activity"
+        ],
+        "properties": {
+          "reachability": {
+            "type": "object",
+            "required": [
+              "value",
+              "basis",
+              "citations"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 2
+              },
+              "basis": {
+                "type": "string",
+                "minLength": 1
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "call_id",
+                    "locator",
+                    "fact"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "call_id": {
+                      "type": "string",
+                      "pattern": "^T\\d+$"
+                    },
+                    "locator": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "fact": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "exploit_activity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kev_listed",
+              "credible_in_the_wild",
+              "public_poc",
+              "vendor_exploitation_likely",
+              "vendor_exploitability_assessment",
+              "basis",
+              "citations"
+            ],
+            "properties": {
+              "kev_listed": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "credible_in_the_wild": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "public_poc": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "vendor_exploitation_likely": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "vendor_exploitability_assessment": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "basis": {
+                "type": "string",
+                "minLength": 1
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "call_id",
+                    "locator",
+                    "fact"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "call_id": {
+                      "type": "string",
+                      "pattern": "^T\\d+$"
+                    },
+                    "locator": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "fact": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "impact": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asset_criticality",
+          "blast_radius",
+          "rto_hours"
+        ],
+        "properties": {
+          "asset_criticality": {
+            "type": "object",
+            "required": [
+              "value",
+              "basis",
+              "citations"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 2
+              },
+              "basis": {
+                "type": "string",
+                "minLength": 1
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "call_id",
+                    "locator",
+                    "fact"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "call_id": {
+                      "type": "string",
+                      "pattern": "^T\\d+$"
+                    },
+                    "locator": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "fact": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "blast_radius": {
+            "type": "object",
+            "required": [
+              "value",
+              "basis",
+              "citations"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 2
+              },
+              "basis": {
+                "type": "string",
+                "minLength": 1
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "call_id",
+                    "locator",
+                    "fact"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "call_id": {
+                      "type": "string",
+                      "pattern": "^T\\d+$"
+                    },
+                    "locator": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "fact": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "rto_hours": {
+            "type": "object",
+            "required": [
+              "value",
+              "basis",
+              "citations"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "basis": {
+                "type": "string",
+                "minLength": 1
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "call_id",
+                    "locator",
+                    "fact"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "call_id": {
+                      "type": "string",
+                      "pattern": "^T\\d+$"
+                    },
+                    "locator": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "fact": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "assumptions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "statement",
+            "reason",
+            "affects"
+          ],
+          "properties": {
+            "statement": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            },
+            "affects": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "unknowns": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "question",
+            "decisive",
+            "condition_id",
+            "why_it_matters",
+            "default_applied",
+            "how_to_resolve"
+          ],
+          "properties": {
+            "question": {
+              "type": "string"
+            },
+            "decisive": {
+              "type": "boolean"
+            },
+            "condition_id": {
+              "enum": [
+                "C1",
+                "C2",
+                "C3",
+                null
+              ]
+            },
+            "why_it_matters": {
+              "type": "string"
+            },
+            "default_applied": {
+              "type": "string"
+            },
+            "how_to_resolve": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "conflicts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fact",
+            "values",
+            "citations",
+            "resolution"
+          ],
+          "properties": {
+            "fact": {
+              "type": "string"
+            },
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 2
+            },
+            "citations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "call_id",
+                  "locator",
+                  "fact"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "call_id": {
+                    "type": "string",
+                    "pattern": "^T\\d+$"
+                  },
+                  "locator": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "fact": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            },
+            "resolution": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      },
+      "other_factors": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "fact_validation_failed": "Code validation rejected your extraction. Fix every problem below and return the complete corrected\nJSON object (not just the changed parts). This is the only retry.\n\nProblems:\n{problems}",
+  "explain_system": "You are the explanation stage of a security triage agent. The rating has already been computed by\ncode from validated facts using the group's policy. Explain it to a SOC analyst and recommend action.\n\nRules:\n- Do not change, re-score or second-guess the decision, policy rule, scores or confidence level.\n  Explain them as given. Any scores you write are ignored.\n- Use only the validated facts provided. Do not add facts from memory.\n- Separate technical severity (CVSS: how bad the flaw is in general) from local risk (this asset in\n  this environment). Say why they differ, if they do.\n- If the decision is Insufficient Evidence, say clearly that the rating is not binding, name the\n  missing decisive fact(s), and state the provisional rating and the condition under which it applies.\n- If the decision is Review Needed, say what failed or conflicted and what a human must check.\n- The recommended next step must be concrete and doable (who checks what, and how).\n- evidence_to_resolve: list the specific findings that would resolve or change the decision and the\n  effect each would have under the policy (e.g. \"C3 = false -> Low (P-NA)\").\n- The confidence explanation must justify the given confidence level using the given reasons.\n- Plain, precise language. No marketing tone.\n\nReturn only the JSON object described by the schema.",
+  "explanation_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "decision_summary",
+      "severity_vs_local_risk",
+      "confidence_explanation",
+      "action"
+    ],
+    "properties": {
+      "decision_summary": {
+        "type": "string",
+        "minLength": 1
+      },
+      "provisional_condition": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "severity_vs_local_risk": {
+        "type": "string",
+        "minLength": 1
+      },
+      "confidence_explanation": {
+        "type": "string",
+        "minLength": 1
+      },
+      "action": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recommended_next_step",
+          "priority",
+          "owner",
+          "interim_measures",
+          "evidence_to_resolve"
+        ],
+        "properties": {
+          "recommended_next_step": {
+            "type": "string",
+            "minLength": 1
+          },
+          "priority": {
+            "enum": [
+              "Immediate",
+              "High",
+              "Normal",
+              "Low"
+            ]
+          },
+          "owner": {
+            "type": "string"
+          },
+          "interim_measures": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence_to_resolve": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "evidence_needed",
+                "effect_on_decision"
+              ],
+              "properties": {
+                "evidence_needed": {
+                  "type": "string"
+                },
+                "effect_on_decision": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

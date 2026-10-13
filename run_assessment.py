@@ -4,15 +4,16 @@ Examples:
     python run_assessment.py                                  # the configured case (CVE-2026-69730 on W01)
     python run_assessment.py --fail nvd --fail cve            # controlled failure: CVE/NVD APIs down (cache fallback)
     python run_assessment.py --fail cve --fail nvd --no-cache # controlled failure with no cache -> P-RV-F
-    python run_assessment.py --env path/to/variant.json --run-id applicability-check
+    python run_assessment.py --env Resources/policy_check_environments/adjustment1_patched_build.json --run-id adjustment1_patched_build
 
-Outputs go to runs/<run_id>/ (assessment.json, tool_outputs/, model_transcript.jsonl, run_log.jsonl, ...).
+Outputs go to model_outputs_and_assessments/<run_id>/ (assessment.json, tool_outputs/, inputs/, other_info/).
 Exit code: 0 completed and valid, 1 completed but failed validation, 2 stopped (Review Needed).
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -31,7 +32,7 @@ def main() -> int:
     ap.add_argument("--env", help="override the environment snapshot path (repo-relative)")
     ap.add_argument("--fail", action="append", choices=SOURCES, default=[], help="simulate an outage of a source (repeatable)")
     ap.add_argument("--no-cache", action="store_true", help="disable cached fallbacks")
-    ap.add_argument("--run-id", help="name of the run folder under runs/")
+    ap.add_argument("--run-id", help="name of the run folder under model_outputs_and_assessments/")
     args = ap.parse_args()
 
     s = config.load_settings(overrides={"fault_injection": {**{src: True for src in args.fail}, "disable_cache": args.no_cache}})
@@ -41,6 +42,14 @@ def main() -> int:
         s["inputs"]["asset_id"] = args.asset
     if args.env:
         s["inputs"]["environment_snapshot"]["path"] = args.env
+        try:  # a variant file names itself in metadata.variant; record it and apply its risk question / asset
+            variant = json.loads(config.path(args.env).read_text(encoding="utf-8"))["metadata"]["variant"]
+            s["inputs"]["environment_snapshot"]["id"] += f"+{variant['id']}"
+            s["inputs"]["risk_question"] = variant.get("risk_question", s["inputs"]["risk_question"])
+            if not args.asset:
+                s["inputs"]["asset_id"] = variant.get("asset_id", s["inputs"]["asset_id"])
+        except (OSError, ValueError, KeyError, TypeError):
+            pass  # not a variant file, or missing/unparseable (intake reports the latter)
 
     print(f"Running {s['inputs']['cve_id']} on {s['inputs']['asset_id']} with {s['model']['name']} "
           f"(faults: {args.fail or 'none'}{', no cache' if args.no_cache else ''}) ...")

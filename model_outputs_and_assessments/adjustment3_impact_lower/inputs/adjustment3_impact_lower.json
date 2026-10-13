@@ -1,0 +1,3339 @@
+{
+  "metadata": {
+    "scenario": "Northbridge Services Windows Enterprise Environment",
+    "scenario_version": "1.0",
+    "source_document": "Windows_Enterprise_Environment.docx",
+    "source_mode": "simulated",
+    "disclaimer": "Fictional environment created with generative AI for instructional purposes. Company details, configurations, counts and observations are simulated. Not a recommended security baseline.",
+    "conventions": {
+      "null": "Unknown. Never treat null as a negative or a safe value.",
+      "basis": "'stated' = written in the source document. 'inferred' = derived by the group from the document's text or standard Windows/AD behaviour; verify before relying on it for a decisive fact.",
+      "source_locator": "Section and table row in Windows_Enterprise_Environment.docx that supports the record.",
+      "cohort_records": "A record with count > 1 summarizes multiple instances; it does not assert identical settings on every host."
+    },
+    "reconstruction_notes": [
+      "Built from the .docx. The document refers to an official windows_enterprise_environment.json fixture with 16 permitted flow records, named owners, exact site overlays and per-record dependencies; that fixture was not available.",
+      "Flows in this file are reconstructed from the 'Main paths' and 'Trust and administrative boundaries' text and are not the official 16 records.",
+      "Owners are null because the .docx does not list them.",
+      "Zone placement, dependencies and business-service mappings marked 'inferred' were added by the group."
+    ],
+    "variant": {
+      "id": "adjustment3_impact_lower",
+      "check": "Impact change: the only exposed DNS server is the print server cohort, not the domain controllers",
+      "risk_question": "What is the risk that an unauthenticated remote code execution vulnerability in the Windows DNS Server service (CVE-2026-69730) poses to Northbridge Services' print servers (W06), the only assets running the DNS Server role, given their role, patch status, reachability, likelihood of compromise, and the vulnerability's impact?",
+      "asset_id": "W06",
+      "changes": [
+        "assets[asset_id=W01].services: DNS Server removed",
+        "assets[asset_id=W06].services: DNS Server added",
+        "assets[asset_id=W06].platform.os_build = 10.0.20348.5499 (below the fixed build), installed_kbs = [KB5120242]",
+        "flows[flow_id=F09]: DNS (53/tcp, 53/udp) removed",
+        "flows[flow_id=F17] added: domain-joined devices -> W06 DNS 53/tcp+udp (internal only, as before)"
+      ]
+    }
+  },
+  "organization": {
+    "name": "Northbridge Services",
+    "staff": {
+      "total": 1000,
+      "hq": 700,
+      "branch": 150,
+      "remote": 150
+    },
+    "business_functions": [
+      "customer service",
+      "orders",
+      "invoicing",
+      "payroll"
+    ],
+    "sites": [
+      {
+        "site_id": "HQ",
+        "subnet_pattern": "10.20.x.0/24",
+        "notes": "Primary site."
+      },
+      {
+        "site_id": "BRANCH",
+        "subnet_pattern": "10.30.x.0/24",
+        "notes": "Site overlay of the same trust zones; exact zone list per site not supplied."
+      },
+      {
+        "site_id": "RECOVERY",
+        "subnet_pattern": "10.40.x.0/24",
+        "notes": "Hosts infrastructure and replicated data. Site overlay of the same trust zones."
+      }
+    ],
+    "site_links": "Site-to-site IPsec links preserve trust boundaries; site overlays are not flat networks.",
+    "active_directory": {
+      "forests": 1,
+      "domains": 1,
+      "domain_name": "corp.northbridge.example",
+      "entra_tenants": 1,
+      "sync": "AD synchronized to one Microsoft Entra tenant via W03."
+    },
+    "source_locator": "Organization and scope",
+    "evidence_ids": [
+      "S01"
+    ]
+  },
+  "inventory_summary": {
+    "endpoints": {
+      "total": 1000,
+      "windows_11": 940,
+      "windows_10": 40,
+      "mac": 10,
+      "linux": 10
+    },
+    "server_vms": {
+      "total": 60,
+      "windows_server": 52,
+      "linux": 8,
+      "notes": "Includes the offline root CA. Excludes virtual appliances N03 and N10."
+    },
+    "vmware_hosts": 6,
+    "appliances": 32,
+    "wireless_access_points": 40,
+    "printers": 30,
+    "cloud_services": [
+      "C01 Entra ID",
+      "C02 Microsoft 365",
+      "C03 Sentinel",
+      "C04 Intune and Defender for Endpoint"
+    ],
+    "source_locator": "Organization and scope, inventory table; Evidence S01",
+    "evidence_ids": [
+      "S01"
+    ]
+  },
+  "network": {
+    "default_policy": {
+      "inter_zone": "deny unless listed",
+      "internet_inbound": "deny unsolicited",
+      "source_locator": "Network architecture and access",
+      "evidence_ids": [
+        "S02"
+      ]
+    },
+    "internet_path": "Internet -> perimeter firewall (N01) -> VPN (N02), portal WAF (N03) or partner SFTP (L02) in the DMZ.",
+    "public_services": [
+      {
+        "service": "Customer portal",
+        "address": "192.0.2.10",
+        "port": 443,
+        "protocol": "TCP",
+        "front_end_asset": "N03",
+        "basis": "stated"
+      },
+      {
+        "service": "Remote access VPN",
+        "address": "192.0.2.20",
+        "port": 443,
+        "protocol": "TCP",
+        "front_end_asset": "N02",
+        "basis": "stated"
+      },
+      {
+        "service": "Partner SFTP",
+        "address": "192.0.2.30",
+        "port": 22,
+        "protocol": "TCP",
+        "front_end_asset": "L02",
+        "basis": "stated"
+      }
+    ],
+    "not_published_to_internet": [
+      "RDP",
+      "SMB",
+      "LDAP",
+      "SQL",
+      "DNS",
+      "appliance or infrastructure management interfaces"
+    ],
+    "not_published_notes": "RDP, SMB, LDAP, SQL and management are stated (S02). DNS is inferred: no public DNS service is listed among the three published services, and unsolicited inbound traffic is denied.",
+    "exposure_note": "Internet exposure of a front end does not establish direct exposure of its database.",
+    "source_locator": "Network architecture and access",
+    "evidence_ids": [
+      "S02"
+    ]
+  },
+  "zones": [
+    {
+      "zone_id": "DMZ",
+      "hq_subnet": "10.20.10.0/24",
+      "purpose": "VPN, WAF, proxies and SFTP",
+      "internet_facing": true,
+      "assets": [
+        "N02",
+        "N03",
+        "L01",
+        "L02"
+      ]
+    },
+    {
+      "zone_id": "IDENTITY",
+      "hq_subnet": "10.20.20.0/24",
+      "purpose": "Directory, DNS, DHCP and online PKI",
+      "internet_facing": false,
+      "assets": [
+        "W01",
+        "W02",
+        "W03",
+        "W04"
+      ]
+    },
+    {
+      "zone_id": "APPS",
+      "hq_subnet": "10.20.30.0/24",
+      "purpose": "Business and shared services",
+      "internet_facing": false,
+      "assets": [
+        "W05",
+        "W06",
+        "W10",
+        "W11",
+        "W13",
+        "W16"
+      ]
+    },
+    {
+      "zone_id": "DATA",
+      "hq_subnet": "10.20.40.0/24",
+      "purpose": "Production SQL only",
+      "internet_facing": false,
+      "assets": [
+        "W12"
+      ]
+    },
+    {
+      "zone_id": "MGMT",
+      "hq_subnet": "10.20.50.0/24",
+      "purpose": "Infrastructure and management",
+      "internet_facing": false,
+      "assets": [
+        "W07",
+        "W08",
+        "W14",
+        "W17",
+        "W18",
+        "H01",
+        "N04",
+        "N06",
+        "N07",
+        "N10"
+      ]
+    },
+    {
+      "zone_id": "BACKUP",
+      "hq_subnet": "10.20.60.0/24",
+      "purpose": "Backup control and repository",
+      "internet_facing": false,
+      "assets": [
+        "W09",
+        "N08"
+      ]
+    },
+    {
+      "zone_id": "USERS",
+      "hq_subnet": "10.20.64.0/22",
+      "purpose": "Standard wired and corporate Wi-Fi clients",
+      "internet_facing": false,
+      "assets": [
+        "E01",
+        "E04"
+      ]
+    },
+    {
+      "zone_id": "LEGACY",
+      "hq_subnet": "10.20.70.0/24",
+      "purpose": "Legacy workstations and finance VMs",
+      "internet_facing": false,
+      "assets": [
+        "E02",
+        "W15"
+      ]
+    },
+    {
+      "zone_id": "IOT",
+      "hq_subnet": "10.20.80.0/24",
+      "purpose": "Printers and scanners",
+      "internet_facing": false,
+      "assets": [
+        "P01"
+      ]
+    },
+    {
+      "zone_id": "GUEST",
+      "hq_subnet": "10.20.90.0/24",
+      "purpose": "Internet-only guest clients",
+      "internet_facing": false,
+      "assets": []
+    },
+    {
+      "zone_id": "ADMIN",
+      "hq_subnet": "10.20.100.0/24",
+      "purpose": "Privileged access workstations",
+      "internet_facing": false,
+      "assets": [
+        "E03"
+      ]
+    },
+    {
+      "zone_id": "DEV",
+      "hq_subnet": "10.20.110.0/24",
+      "purpose": "Developers and build systems",
+      "internet_facing": false,
+      "assets": [
+        "L03",
+        "L04",
+        "E05"
+      ]
+    },
+    {
+      "zone_id": "VPN",
+      "hq_subnet": "10.20.120.0/24",
+      "purpose": "Authenticated remote client address pool",
+      "internet_facing": false,
+      "assets": []
+    },
+    {
+      "zone_id": "STORAGE",
+      "hq_subnet": "10.20.130.0/24",
+      "purpose": "Storage data plane",
+      "internet_facing": false,
+      "assets": [
+        "N09"
+      ]
+    }
+  ],
+  "zones_notes": "Zone purposes and subnets are stated. Assignment of individual assets to zones is inferred from zone purposes unless the asset record says zone_basis = stated. N01, N05, N11 and cloud services C01-C04 are not placed in a single zone.",
+  "flows": [
+    {
+      "flow_id": "F01",
+      "source": "Internet",
+      "destination": "N03",
+      "service": "HTTPS",
+      "ports": [
+        "443/tcp"
+      ],
+      "purpose": "Customer portal access via WAF",
+      "basis": "stated",
+      "source_locator": "Network architecture and access, main paths"
+    },
+    {
+      "flow_id": "F02",
+      "source": "N03",
+      "destination": "L01",
+      "service": "HTTP(S)",
+      "ports": null,
+      "purpose": "WAF to reverse proxy",
+      "basis": "stated",
+      "source_locator": "Network architecture and access, main paths"
+    },
+    {
+      "flow_id": "F03",
+      "source": "L01",
+      "destination": "W13",
+      "service": "HTTP(S)",
+      "ports": null,
+      "purpose": "Reverse proxy to portal backends (2 of 4 W13 hosts)",
+      "basis": "stated",
+      "source_locator": "Network architecture and access, main paths"
+    },
+    {
+      "flow_id": "F04",
+      "source": "W13",
+      "destination": "W12",
+      "service": "SQL",
+      "ports": [
+        "1433/tcp"
+      ],
+      "purpose": "Portal backend to production SQL",
+      "basis": "stated",
+      "ports_basis": "inferred (SQL Server default)",
+      "source_locator": "Network architecture and access, main paths"
+    },
+    {
+      "flow_id": "F05",
+      "source": "Internet",
+      "destination": "N02",
+      "service": "SSL VPN",
+      "ports": [
+        "443/tcp"
+      ],
+      "purpose": "Remote staff VPN",
+      "basis": "stated",
+      "source_locator": "Network architecture and access"
+    },
+    {
+      "flow_id": "F06",
+      "source": "VPN",
+      "destination": "approved business services",
+      "service": "various",
+      "ports": null,
+      "purpose": "Authenticated remote staff to approved business services",
+      "basis": "stated",
+      "source_locator": "Network architecture and access, main paths"
+    },
+    {
+      "flow_id": "F07",
+      "source": "USERS",
+      "destination": "approved business services",
+      "service": "various",
+      "ports": null,
+      "purpose": "Staff to approved business services",
+      "basis": "stated",
+      "source_locator": "Network architecture and access, main paths"
+    },
+    {
+      "flow_id": "F08",
+      "source": "Internet (partners)",
+      "destination": "L02",
+      "service": "SFTP",
+      "ports": [
+        "22/tcp"
+      ],
+      "purpose": "Partner order file exchange",
+      "basis": "stated",
+      "source_locator": "Network architecture and access"
+    },
+    {
+      "flow_id": "F09",
+      "source": "Domain-joined devices (all internal client and server zones)",
+      "destination": "W01",
+      "service": "Kerberos, LDAP, required RPC",
+      "ports": [
+        "88/tcp",
+        "88/udp",
+        "389/tcp",
+        "389/udp",
+        "636/tcp",
+        "135/tcp",
+        "49152-65535/tcp"
+      ],
+      "purpose": "Scoped directory services. Does not grant general management access.",
+      "basis": "stated",
+      "ports_basis": "inferred (Microsoft service and port reference)",
+      "source_locator": "Trust and administrative boundaries"
+    },
+    {
+      "flow_id": "F10",
+      "source": "ADMIN (E03)",
+      "destination": "W01, W02 (issuing CA), W03",
+      "service": "Tier 0 administration (RDP, PowerShell)",
+      "ports": null,
+      "purpose": "Only path for Tier 0 administration",
+      "basis": "stated",
+      "source_locator": "Trust and administrative boundaries; W08 row"
+    },
+    {
+      "flow_id": "F11",
+      "source": "ADMIN (E03)",
+      "destination": "W08",
+      "service": "RDP, PowerShell",
+      "ports": [
+        "3389/tcp",
+        "5985/tcp",
+        "5986/tcp"
+      ],
+      "purpose": "Privileged workstation to jump hosts",
+      "basis": "inferred",
+      "source_locator": "Network architecture and access, main paths; W08 row"
+    },
+    {
+      "flow_id": "F12",
+      "source": "W08",
+      "destination": "Ordinary infrastructure (MGMT, APPS, BACKUP targets)",
+      "service": "RDP, PowerShell",
+      "ports": [
+        "3389/tcp",
+        "5985/tcp",
+        "5986/tcp"
+      ],
+      "purpose": "Controlled administration of non-Tier 0 infrastructure",
+      "basis": "stated",
+      "ports_basis": "inferred",
+      "source_locator": "W08 row; Trust and administrative boundaries"
+    },
+    {
+      "flow_id": "F13",
+      "source": "W09",
+      "destination": "H01, N08",
+      "service": "Backup",
+      "ports": null,
+      "purpose": "Backup service to permitted hypervisor and repository interfaces",
+      "basis": "stated",
+      "source_locator": "Network architecture and access, main paths"
+    },
+    {
+      "flow_id": "F14",
+      "source": "GUEST",
+      "destination": "Internet",
+      "service": "any outbound",
+      "ports": null,
+      "purpose": "Guests reach only the Internet",
+      "basis": "stated",
+      "source_locator": "Network architecture and access"
+    },
+    {
+      "flow_id": "F15",
+      "source": "W11",
+      "destination": "W12",
+      "service": "SQL",
+      "ports": [
+        "1433/tcp"
+      ],
+      "purpose": "ERP application to production SQL (named application sources only)",
+      "basis": "inferred",
+      "source_locator": "Business application and Linux servers"
+    },
+    {
+      "flow_id": "F16",
+      "source": "USERS, LEGACY (via DHCP relay)",
+      "destination": "W04",
+      "service": "DHCP",
+      "ports": [
+        "67/udp",
+        "68/udp"
+      ],
+      "purpose": "Client addressing for HQ and branch",
+      "basis": "stated",
+      "ports_basis": "inferred",
+      "source_locator": "W04 row"
+    },
+    {
+      "flow_id": "F17",
+      "source": "Domain-joined devices (all internal client and server zones)",
+      "destination": "W06",
+      "service": "DNS",
+      "ports": [
+        "53/tcp",
+        "53/udp"
+      ],
+      "purpose": "Internal name resolution",
+      "basis": "policy-check variant",
+      "source_locator": "policy-check variant (replaces the DNS part of F09)"
+    }
+  ],
+  "denied_paths": [
+    {
+      "source": "Internet",
+      "destination": "any internal zone except published DMZ services",
+      "basis": "stated",
+      "evidence_ids": [
+        "S02"
+      ]
+    },
+    {
+      "source": "USERS (user endpoints)",
+      "destination": "W08",
+      "basis": "stated",
+      "source_locator": "W08 row"
+    },
+    {
+      "source": "W08",
+      "destination": "W01, W02, W03 (Tier 0)",
+      "basis": "stated",
+      "source_locator": "Trust and administrative boundaries"
+    },
+    {
+      "source": "GUEST",
+      "destination": "any internal zone",
+      "basis": "stated",
+      "source_locator": "Network architecture and access"
+    },
+    {
+      "source": "any",
+      "destination": "W02 offline root CA",
+      "basis": "stated",
+      "notes": "Normally powered off; excluded from routine network reachability."
+    }
+  ],
+  "assets": [
+    {
+      "asset_id": "W01",
+      "name": "Domain controllers",
+      "category": "windows_server",
+      "count": 4,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "AD DS",
+        "Kerberos",
+        "Group Policy"
+      ],
+      "zone": "IDENTITY",
+      "zone_basis": "stated",
+      "sites": {
+        "HQ": 2,
+        "RECOVERY": 2
+      },
+      "tier": "Tier 0",
+      "tier_basis": "stated",
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [],
+      "dependents": [
+        "All domain-joined endpoints and servers (authentication, Group Policy)"
+      ],
+      "business_services": [
+        "BS01"
+      ],
+      "config_notes": [
+        "One forest, one domain: corp.northbridge.example.",
+        "No public LDAP or RDP.",
+        "Print Spooler disabled on DCs.",
+        "Administered only from dedicated privileged access workstations (E03).",
+        "DNS Server role is not installed on the DCs; DNS is served by W06. [policy-check variant]"
+      ],
+      "unknowns": [
+        "Exact OS build per DC",
+        "Installed KBs per DC",
+        "Recovery-site subnet octet (10.40.x.0/24)",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S02",
+        "S05"
+      ],
+      "source_locator": "Windows identity and infrastructure servers, row W01; Trust and administrative boundaries",
+      "tags": [
+        "domain controller",
+        "dc",
+        "active directory",
+        "ad ds",
+        "kerberos",
+        "ldap",
+        "group policy",
+        "identity",
+        "tier 0"
+      ]
+    },
+    {
+      "asset_id": "W02",
+      "name": "Certificate authorities",
+      "category": "windows_server",
+      "count": 2,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Active Directory Certificate Services",
+          "version": null
+        }
+      ],
+      "services": [
+        "AD CS"
+      ],
+      "zone": "IDENTITY",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": "Tier 0",
+      "tier_basis": "stated",
+      "internet_exposure": "none",
+      "owner": null,
+      "instances": [
+        {
+          "instance": "Offline standalone root CA",
+          "notes": "Normally powered off; excluded from routine network reachability."
+        },
+        {
+          "instance": "Online enterprise issuing CA",
+          "notes": "Provides online certificate enrollment."
+        }
+      ],
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "Machine and user certificate consumers"
+      ],
+      "business_services": [
+        "BS01"
+      ],
+      "config_notes": [
+        "Certificate template permissions and enrollment settings are not supplied; presence of AD CS alone does not establish a certificate abuse vulnerability."
+      ],
+      "unknowns": [
+        "OS builds",
+        "Installed KBs",
+        "Template permissions",
+        "Enrollment settings",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Windows identity and infrastructure servers, row W02; Trust and administrative boundaries",
+      "tags": [
+        "pki",
+        "ad cs",
+        "certificate authority",
+        "ca",
+        "root ca",
+        "issuing ca",
+        "tier 0"
+      ]
+    },
+    {
+      "asset_id": "W03",
+      "name": "Directory sync servers",
+      "category": "windows_server",
+      "count": 2,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Directory synchronization application",
+          "version": null
+        }
+      ],
+      "services": [
+        "AD to Entra ID synchronization"
+      ],
+      "zone": "IDENTITY",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": "Tier 0",
+      "tier_basis": "stated",
+      "internet_exposure": "outbound_only",
+      "owner": null,
+      "instances": [
+        {
+          "instance": "Active sync server"
+        },
+        {
+          "instance": "Staging sync server"
+        }
+      ],
+      "depends_on": [
+        "W01",
+        "C01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "C01"
+      ],
+      "business_services": [
+        "BS01"
+      ],
+      "config_notes": [],
+      "unknowns": [
+        "Exact sync application build",
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Windows identity and infrastructure servers, row W03",
+      "tags": [
+        "entra connect",
+        "directory sync",
+        "hybrid identity",
+        "tier 0"
+      ]
+    },
+    {
+      "asset_id": "W04",
+      "name": "DHCP servers",
+      "category": "windows_server",
+      "count": 2,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "DHCP Server (failover)"
+      ],
+      "zone": "IDENTITY",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "HQ and branch clients"
+      ],
+      "business_services": [],
+      "config_notes": [
+        "Authorized DHCP servers; DHCP relay on access VLANs; serves HQ and branch."
+      ],
+      "unknowns": [
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Windows identity and infrastructure servers, row W04",
+      "tags": [
+        "dhcp",
+        "failover"
+      ]
+    },
+    {
+      "asset_id": "W05",
+      "name": "File servers",
+      "category": "windows_server",
+      "count": 4,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "SMB 3 file shares"
+      ],
+      "zone": "APPS",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "instances": [
+        {
+          "instance": "FILE01-FILE03",
+          "notes": "SMB signing required."
+        },
+        {
+          "instance": "FILE04",
+          "notes": "SMB signing not required."
+        }
+      ],
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "Staff using department and shared documents"
+      ],
+      "business_services": [
+        "BS05"
+      ],
+      "config_notes": [
+        "SMB1 disabled across W05.",
+        "Finance and HR shares use AD groups.",
+        "SMB signing required on three hosts; not required on FILE04."
+      ],
+      "unknowns": [
+        "OS builds",
+        "Installed KBs",
+        "Which shares are on FILE04",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S03"
+      ],
+      "source_locator": "Windows identity and infrastructure servers, row W05; Evidence S03",
+      "tags": [
+        "file server",
+        "smb",
+        "smb signing",
+        "file04",
+        "shares",
+        "finance",
+        "hr"
+      ]
+    },
+    {
+      "asset_id": "W06",
+      "name": "Print servers",
+      "category": "windows_server",
+      "count": 2,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": "10.0.20348.5499",
+        "installed_kbs": [
+          "KB5120242"
+        ]
+      },
+      "software": [],
+      "services": [
+        "Print Spooler",
+        "Central print queues",
+        "DNS Server"
+      ],
+      "zone": "APPS",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01",
+        "P01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "Staff printing",
+        "Domain-joined devices (DNS resolution)"
+      ],
+      "business_services": [
+        "BS05"
+      ],
+      "config_notes": [
+        "Print Spooler enabled on W06 (disabled on DCs).",
+        "Driver approval policy exists.",
+        "Both print servers report OS build 10.0.20348.5499 (KB5120242 installed). [policy-check variant]",
+        "DNS Server role hosted on the print servers for all internal zones. [policy-check variant]"
+      ],
+      "unknowns": [
+        "Actual printer driver inventory",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Windows identity and infrastructure servers, row W06",
+      "tags": [
+        "print",
+        "spooler",
+        "printnightmare",
+        "drivers",
+        "dns"
+      ]
+    },
+    {
+      "asset_id": "W07",
+      "name": "Configuration Manager servers",
+      "category": "windows_server",
+      "count": 2,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Microsoft Configuration Manager",
+          "version": null
+        }
+      ],
+      "services": [
+        "Software distribution",
+        "Endpoint patching"
+      ],
+      "zone": "MGMT",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "instances": [
+        {
+          "instance": "Site server"
+        },
+        {
+          "instance": "Distribution point"
+        }
+      ],
+      "depends_on": [
+        "W01",
+        "W14"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "Managed Windows endpoints and servers"
+      ],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [
+        "Configuration Manager version",
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Windows identity and infrastructure servers, row W07",
+      "tags": [
+        "sccm",
+        "mecm",
+        "configmgr",
+        "patching",
+        "software distribution"
+      ]
+    },
+    {
+      "asset_id": "W08",
+      "name": "Administrative jump hosts",
+      "category": "windows_server",
+      "count": 2,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "RDP",
+        "PowerShell remoting"
+      ],
+      "zone": "MGMT",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": "Tier 1 (ordinary infrastructure)",
+      "tier_basis": "inferred",
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [
+        "BS01"
+      ],
+      "config_notes": [
+        "Separate admin accounts.",
+        "User endpoints cannot reach these hosts.",
+        "Cannot administer DCs, issuing CA or directory sync servers."
+      ],
+      "unknowns": [
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S02"
+      ],
+      "source_locator": "Windows identity and infrastructure servers, row W08; Trust and administrative boundaries",
+      "tags": [
+        "jump host",
+        "bastion",
+        "rdp",
+        "powershell",
+        "admin"
+      ]
+    },
+    {
+      "asset_id": "W09",
+      "name": "Backup management servers",
+      "category": "windows_server",
+      "count": 2,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Veeam Backup & Replication",
+          "version": null
+        }
+      ],
+      "services": [
+        "VM and application backup coordination"
+      ],
+      "zone": "BACKUP",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "H01",
+        "N08"
+      ],
+      "depends_on_basis": "stated",
+      "dependents": [
+        "All backed-up VMs and applications"
+      ],
+      "business_services": [
+        "BS06"
+      ],
+      "config_notes": [
+        "Separate backup credentials.",
+        "Immutable repository (30-day immutable setting)."
+      ],
+      "unknowns": [
+        "Veeam build",
+        "Installed Veeam fixes",
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S05"
+      ],
+      "source_locator": "Windows identity and infrastructure servers, row W09; Evidence controls and business impact",
+      "tags": [
+        "backup",
+        "veeam",
+        "immutable",
+        "recovery"
+      ]
+    },
+    {
+      "asset_id": "W10",
+      "name": "Remote Desktop Services hosts",
+      "category": "windows_server",
+      "count": 4,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "Remote Desktop Services"
+      ],
+      "zone": "APPS",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [
+        "Internal remote application delivery."
+      ],
+      "unknowns": [
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Business application and Linux servers, row W10",
+      "tags": [
+        "rds",
+        "remote desktop",
+        "rdp",
+        "terminal server"
+      ]
+    },
+    {
+      "asset_id": "W11",
+      "name": "ERP application servers",
+      "category": "windows_server",
+      "count": 4,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "IIS",
+          "version": "10"
+        },
+        {
+          "name": "Northbridge ERP",
+          "version": null
+        }
+      ],
+      "services": [
+        "Orders",
+        "Invoicing",
+        "Fulfillment"
+      ],
+      "zone": "APPS",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "instances": [
+        {
+          "instance": "2 production nodes"
+        },
+        {
+          "instance": "2 test nodes",
+          "notes": "Test data is synthetic."
+        }
+      ],
+      "depends_on": [
+        "W01",
+        "W12"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "300 daily operations staff"
+      ],
+      "business_services": [
+        "BS02"
+      ],
+      "config_notes": [],
+      "unknowns": [
+        "ERP version",
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S05"
+      ],
+      "source_locator": "Business application and Linux servers, row W11",
+      "tags": [
+        "erp",
+        "iis",
+        "orders",
+        "invoicing",
+        "fulfillment"
+      ]
+    },
+    {
+      "asset_id": "W12",
+      "name": "Production database servers",
+      "category": "windows_server",
+      "count": 4,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "SQL Server",
+          "version": "2022",
+          "build": null
+        }
+      ],
+      "services": [
+        "SQL Server (2 availability groups, 2 replicas each)"
+      ],
+      "zone": "DATA",
+      "zone_basis": "stated",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "W11",
+        "W13",
+        "W15"
+      ],
+      "business_services": [
+        "BS02",
+        "BS03",
+        "BS04"
+      ],
+      "config_notes": [
+        "Database access restricted to named application and administrative sources."
+      ],
+      "unknowns": [
+        "SQL Server build/CU",
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S02"
+      ],
+      "source_locator": "Business application and Linux servers, row W12",
+      "tags": [
+        "sql",
+        "sql server",
+        "database",
+        "erp data",
+        "finance data",
+        "availability group"
+      ]
+    },
+    {
+      "asset_id": "W13",
+      "name": "Intranet and customer portal servers",
+      "category": "windows_server",
+      "count": 4,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "IIS",
+          "version": "10"
+        }
+      ],
+      "services": [
+        "Intranet",
+        "Customer portal backend"
+      ],
+      "zone": "APPS",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "indirect",
+      "owner": null,
+      "instances": [
+        {
+          "instance": "2 intranet servers",
+          "internet_exposure": "none"
+        },
+        {
+          "instance": "2 portal backends",
+          "internet_exposure": "indirect (via N03 and L01)"
+        }
+      ],
+      "depends_on": [
+        "W01",
+        "W12",
+        "L01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "12,000 customer accounts",
+        "staff intranet users"
+      ],
+      "business_services": [
+        "BS04"
+      ],
+      "config_notes": [],
+      "unknowns": [
+        "Portal application version",
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S02"
+      ],
+      "source_locator": "Business application and Linux servers, row W13",
+      "tags": [
+        "iis",
+        "portal",
+        "intranet",
+        "web",
+        "customer"
+      ]
+    },
+    {
+      "asset_id": "W14",
+      "name": "Management database servers",
+      "category": "windows_server",
+      "count": 2,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "SQL Server",
+          "version": "2022",
+          "build": null
+        }
+      ],
+      "services": [
+        "Configuration Manager database",
+        "Operations databases"
+      ],
+      "zone": "MGMT",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "W07"
+      ],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [
+        "SQL Server build/CU",
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Business application and Linux servers, row W14",
+      "tags": [
+        "sql",
+        "sql server",
+        "configmgr database",
+        "operations"
+      ]
+    },
+    {
+      "asset_id": "W15",
+      "name": "Legacy finance application servers",
+      "category": "windows_server",
+      "count": 2,
+      "platform": {
+        "os": "Windows Server 2016",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Northbridge Finance Legacy",
+          "version": null
+        }
+      ],
+      "services": [
+        "Payroll export",
+        "Reconciliation"
+      ],
+      "zone": "LEGACY",
+      "zone_basis": "stated",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01",
+        "W12"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "Payroll for 1,000 employees"
+      ],
+      "business_services": [
+        "BS03"
+      ],
+      "config_notes": [
+        "Vendor exception retains NTLM for a service account.",
+        "Service account password last rotated 180 days before the snapshot.",
+        "Patch approval recorded 60 days before the snapshot."
+      ],
+      "unknowns": [
+        "Installed KBs",
+        "Service account rights",
+        "OS builds",
+        "Application version",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S05"
+      ],
+      "source_locator": "Business application and Linux servers, row W15 and legacy finance paragraph",
+      "tags": [
+        "legacy",
+        "finance",
+        "payroll",
+        "ntlm",
+        "service account",
+        "server 2016"
+      ]
+    },
+    {
+      "asset_id": "W16",
+      "name": "Utility servers",
+      "category": "windows_server",
+      "count": 6,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "License (2)",
+        "Batch (2)",
+        "Internal integration (2)"
+      ],
+      "zone": "APPS",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [
+        "Software inventory",
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Business application and Linux servers, row W16",
+      "tags": [
+        "utility",
+        "license",
+        "batch",
+        "integration"
+      ]
+    },
+    {
+      "asset_id": "W17",
+      "name": "Deployment servers",
+      "category": "windows_server",
+      "count": 2,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "OS imaging",
+        "Package staging"
+      ],
+      "zone": "MGMT",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [
+        "Imaging software and version",
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Business application and Linux servers, row W17",
+      "tags": [
+        "deployment",
+        "imaging",
+        "wds",
+        "packages"
+      ]
+    },
+    {
+      "asset_id": "W18",
+      "name": "Monitoring and log collectors",
+      "category": "windows_server",
+      "count": 2,
+      "platform": {
+        "os": "Windows Server 2022",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "Windows Event Forwarding",
+        "Infrastructure monitoring"
+      ],
+      "zone": "MGMT",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01",
+        "C03"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "C03"
+      ],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [
+        "Monitoring software and version",
+        "OS builds",
+        "Installed KBs",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S04"
+      ],
+      "source_locator": "Business application and Linux servers, row W18",
+      "tags": [
+        "monitoring",
+        "logging",
+        "wef",
+        "event forwarding",
+        "siem"
+      ]
+    },
+    {
+      "asset_id": "L01",
+      "name": "Reverse proxy servers",
+      "category": "linux_server",
+      "count": 2,
+      "platform": {
+        "os": "Ubuntu Server 24.04 LTS",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "nginx",
+          "version": null
+        }
+      ],
+      "services": [
+        "Customer portal publishing"
+      ],
+      "zone": "DMZ",
+      "zone_basis": "stated",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "indirect",
+      "owner": null,
+      "depends_on": [
+        "N03",
+        "W13"
+      ],
+      "depends_on_basis": "stated",
+      "dependents": [
+        "BS04"
+      ],
+      "business_services": [
+        "BS04"
+      ],
+      "config_notes": [
+        "Sits behind the WAF (N03)."
+      ],
+      "unknowns": [
+        "nginx version",
+        "Package inventory",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S02"
+      ],
+      "source_locator": "Business application and Linux servers, row L01; Network architecture main paths",
+      "tags": [
+        "nginx",
+        "reverse proxy",
+        "portal",
+        "dmz",
+        "linux"
+      ]
+    },
+    {
+      "asset_id": "L02",
+      "name": "Partner SFTP servers",
+      "category": "linux_server",
+      "count": 2,
+      "platform": {
+        "os": "Ubuntu Server 24.04 LTS",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "OpenSSH",
+          "version": null
+        }
+      ],
+      "services": [
+        "SFTP partner order file exchange"
+      ],
+      "zone": "DMZ",
+      "zone_basis": "stated",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "direct",
+      "owner": null,
+      "depends_on": [],
+      "dependents": [
+        "BS02"
+      ],
+      "business_services": [
+        "BS02"
+      ],
+      "config_notes": [
+        "Published at 192.0.2.30:22."
+      ],
+      "unknowns": [
+        "OpenSSH version",
+        "Package inventory",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S02"
+      ],
+      "source_locator": "Business application and Linux servers, row L02; Network architecture and access",
+      "tags": [
+        "sftp",
+        "openssh",
+        "ssh",
+        "partner",
+        "dmz",
+        "linux",
+        "internet-facing"
+      ]
+    },
+    {
+      "asset_id": "L03",
+      "name": "Git servers",
+      "category": "linux_server",
+      "count": 2,
+      "platform": {
+        "os": "Ubuntu Server 24.04 LTS",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "GitLab",
+          "version": null
+        }
+      ],
+      "services": [
+        "Private source repositories"
+      ],
+      "zone": "DEV",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [],
+      "dependents": [
+        "L04",
+        "E05"
+      ],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [
+        "GitLab version and edition",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Business application and Linux servers, row L03",
+      "tags": [
+        "gitlab",
+        "git",
+        "source code",
+        "dev",
+        "linux"
+      ]
+    },
+    {
+      "asset_id": "L04",
+      "name": "Automation runners",
+      "category": "linux_server",
+      "count": 2,
+      "platform": {
+        "os": "Ubuntu Server 24.04 LTS",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Docker Engine",
+          "version": null
+        }
+      ],
+      "services": [
+        "Build and test applications"
+      ],
+      "zone": "DEV",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "L03"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [
+        "Docker on standalone development VMs. Kubernetes and ingress-nginx explicitly absent (S06)."
+      ],
+      "unknowns": [
+        "Docker version",
+        "Runner software and version",
+        "Named owner"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S06"
+      ],
+      "source_locator": "Business application and Linux servers, row L04 and Docker paragraph",
+      "tags": [
+        "docker",
+        "ci",
+        "runner",
+        "build",
+        "dev",
+        "linux"
+      ]
+    },
+    {
+      "asset_id": "E01",
+      "name": "Standard Windows endpoints",
+      "category": "endpoint",
+      "count": 920,
+      "platform": {
+        "os": "Windows 11 Enterprise 24H2",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Microsoft Defender for Endpoint",
+          "version": null
+        }
+      ],
+      "services": [],
+      "zone": "USERS",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01",
+        "W04",
+        "C04"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [
+        "Defender enrolled."
+      ],
+      "unknowns": [
+        "Exact KBs"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row E01",
+      "tags": [
+        "windows 11",
+        "endpoint",
+        "workstation",
+        "laptop",
+        "defender"
+      ]
+    },
+    {
+      "asset_id": "E02",
+      "name": "Legacy Windows workstations",
+      "category": "endpoint",
+      "count": 40,
+      "platform": {
+        "os": "Windows 10 Enterprise 22H2",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Microsoft Defender for Endpoint",
+          "version": null
+        }
+      ],
+      "services": [],
+      "zone": "LEGACY",
+      "zone_basis": "stated",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01",
+        "W04"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [
+        "40 corporate ESU enrollments (does not prove installed updates).",
+        "12 stale sensors (heartbeat > 7 days).",
+        "10 local admin exceptions.",
+        "Overlap between stale-sensor and local-admin subsets is unknown."
+      ],
+      "unknowns": [
+        "Installed updates",
+        "Overlap of stale sensors and local admin exceptions"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S03",
+        "S04"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row E02; Evidence S03, S04",
+      "tags": [
+        "windows 10",
+        "legacy",
+        "esu",
+        "stale sensor",
+        "local admin"
+      ]
+    },
+    {
+      "asset_id": "E03",
+      "name": "Privileged access workstations",
+      "category": "endpoint",
+      "count": 20,
+      "platform": {
+        "os": "Windows 11 Enterprise 24H2",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [],
+      "zone": "ADMIN",
+      "zone_basis": "stated",
+      "sites": null,
+      "tier": "Tier 0",
+      "tier_basis": "stated",
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "W01",
+        "W02",
+        "W03"
+      ],
+      "business_services": [
+        "BS01"
+      ],
+      "config_notes": [
+        "Dedicated admin use.",
+        "Phishing-resistant MFA."
+      ],
+      "unknowns": [
+        "Exact KBs"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row E03; Trust and administrative boundaries",
+      "tags": [
+        "paw",
+        "privileged access workstation",
+        "admin",
+        "tier 0",
+        "mfa"
+      ]
+    },
+    {
+      "asset_id": "E04",
+      "name": "Mac laptops",
+      "category": "endpoint",
+      "count": 10,
+      "platform": {
+        "os": "macOS",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Intune",
+          "version": null
+        },
+        {
+          "name": "Microsoft Defender for Endpoint",
+          "version": null
+        }
+      ],
+      "services": [],
+      "zone": "USERS",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "C04"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [
+        "Intune and Defender enrolled."
+      ],
+      "unknowns": [
+        "Exact macOS release"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row E04",
+      "tags": [
+        "mac",
+        "macos",
+        "laptop",
+        "endpoint"
+      ]
+    },
+    {
+      "asset_id": "E05",
+      "name": "Linux developer workstations",
+      "category": "endpoint",
+      "count": 10,
+      "platform": {
+        "os": "Ubuntu Desktop 24.04 LTS",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [],
+      "zone": "DEV",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "L03"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [
+        "Named developer sudo access."
+      ],
+      "unknowns": [
+        "Package inventory"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row E05",
+      "tags": [
+        "linux",
+        "ubuntu",
+        "developer",
+        "workstation",
+        "sudo"
+      ]
+    },
+    {
+      "asset_id": "H01",
+      "name": "VMware hosts",
+      "category": "hypervisor",
+      "count": 6,
+      "platform": {
+        "os": "VMware ESXi 8.0",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "Server VM hosting"
+      ],
+      "zone": "MGMT",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "N09",
+        "N10"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "All 60 server VMs and virtual appliances"
+      ],
+      "business_services": [
+        "BS06"
+      ],
+      "config_notes": [],
+      "unknowns": [
+        "ESXi build/patch level"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, infrastructure row H01",
+      "tags": [
+        "vmware",
+        "esxi",
+        "hypervisor",
+        "virtualization"
+      ]
+    },
+    {
+      "asset_id": "N01",
+      "name": "Perimeter firewalls",
+      "category": "network_appliance",
+      "count": 4,
+      "platform": {
+        "os": "PAN-OS",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Palo Alto Networks PA-3400 series",
+          "version": null
+        }
+      ],
+      "services": [
+        "Perimeter filtering"
+      ],
+      "zone": null,
+      "zone_basis": null,
+      "sites": {
+        "HQ": 2,
+        "BRANCH": 1,
+        "RECOVERY": 1
+      },
+      "tier": null,
+      "internet_exposure": "direct",
+      "owner": null,
+      "depends_on": [],
+      "dependents": [
+        "All Internet-facing services"
+      ],
+      "business_services": [],
+      "config_notes": [
+        "HQ pair is active/passive.",
+        "No management interface published to the Internet."
+      ],
+      "unknowns": [
+        "PAN-OS version"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S02"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row N01",
+      "tags": [
+        "palo alto",
+        "pan-os",
+        "firewall",
+        "perimeter",
+        "internet-facing"
+      ]
+    },
+    {
+      "asset_id": "N02",
+      "name": "Remote access VPN gateways",
+      "category": "network_appliance",
+      "count": 2,
+      "platform": {
+        "os": "FortiOS",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Fortinet FortiGate 100F",
+          "version": null
+        }
+      ],
+      "services": [
+        "SSL VPN"
+      ],
+      "zone": "DMZ",
+      "zone_basis": "stated",
+      "sites": {
+        "HQ": 2
+      },
+      "tier": null,
+      "internet_exposure": "direct",
+      "owner": null,
+      "depends_on": [
+        "W01",
+        "C01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "150 remote staff"
+      ],
+      "business_services": [],
+      "config_notes": [
+        "HQ active/standby pair.",
+        "Published at 192.0.2.20:443."
+      ],
+      "unknowns": [
+        "FortiOS version",
+        "VPN fallback account status"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S02"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row N02; Network architecture and access",
+      "tags": [
+        "fortinet",
+        "fortigate",
+        "fortios",
+        "vpn",
+        "ssl vpn",
+        "remote access",
+        "internet-facing"
+      ]
+    },
+    {
+      "asset_id": "N03",
+      "name": "Web application firewalls",
+      "category": "network_appliance",
+      "count": 2,
+      "platform": {
+        "os": "F5 BIG-IP VE",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "F5 Advanced WAF",
+          "version": null
+        }
+      ],
+      "services": [
+        "Portal WAF"
+      ],
+      "zone": "DMZ",
+      "zone_basis": "stated",
+      "sites": {
+        "HQ": 2
+      },
+      "tier": null,
+      "internet_exposure": "direct",
+      "owner": null,
+      "depends_on": [],
+      "dependents": [
+        "L01",
+        "W13"
+      ],
+      "business_services": [
+        "BS04"
+      ],
+      "config_notes": [
+        "HQ active/standby pair.",
+        "Virtual appliance, not counted in the 60 server VMs.",
+        "Published at 192.0.2.10:443."
+      ],
+      "unknowns": [
+        "BIG-IP version"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S02"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row N03",
+      "tags": [
+        "f5",
+        "big-ip",
+        "waf",
+        "portal",
+        "internet-facing"
+      ]
+    },
+    {
+      "asset_id": "N04",
+      "name": "Core switches",
+      "category": "network_appliance",
+      "count": 2,
+      "platform": {
+        "os": "Cisco IOS XE",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Cisco Catalyst 9500",
+          "version": null
+        }
+      ],
+      "services": [
+        "Core switching"
+      ],
+      "zone": "MGMT",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [],
+      "dependents": [
+        "All internal zones"
+      ],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [
+        "IOS XE version"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row N04",
+      "tags": [
+        "cisco",
+        "ios xe",
+        "catalyst",
+        "switch",
+        "core"
+      ]
+    },
+    {
+      "asset_id": "N05",
+      "name": "Access switches",
+      "category": "network_appliance",
+      "count": 12,
+      "platform": {
+        "os": "Cisco IOS XE",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Cisco Catalyst 9300",
+          "version": null
+        }
+      ],
+      "services": [
+        "Access switching",
+        "DHCP relay"
+      ],
+      "zone": null,
+      "zone_basis": null,
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "N04"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [
+        "IOS XE version"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row N05",
+      "tags": [
+        "cisco",
+        "ios xe",
+        "catalyst",
+        "switch",
+        "access"
+      ]
+    },
+    {
+      "asset_id": "N06",
+      "name": "Wireless controllers",
+      "category": "network_appliance",
+      "count": 2,
+      "platform": {
+        "os": "Cisco IOS XE",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Cisco Catalyst 9800",
+          "version": null
+        }
+      ],
+      "services": [
+        "Wireless control"
+      ],
+      "zone": "MGMT",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [],
+      "dependents": [
+        "N11"
+      ],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [
+        "IOS XE version"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row N06",
+      "tags": [
+        "cisco",
+        "ios xe",
+        "wireless",
+        "wlc",
+        "9800"
+      ]
+    },
+    {
+      "asset_id": "N07",
+      "name": "Network access control nodes",
+      "category": "network_appliance",
+      "count": 2,
+      "platform": {
+        "os": "Cisco ISE",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Cisco Identity Services Engine",
+          "version": null
+        }
+      ],
+      "services": [
+        "Network access control"
+      ],
+      "zone": "MGMT",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [
+        "ISE version"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row N07",
+      "tags": [
+        "cisco",
+        "ise",
+        "nac",
+        "802.1x"
+      ]
+    },
+    {
+      "asset_id": "N08",
+      "name": "Backup repository appliances",
+      "category": "storage_appliance",
+      "count": 2,
+      "platform": {
+        "os": "Hardened Linux",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "Immutable backup repository"
+      ],
+      "zone": "BACKUP",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [],
+      "dependents": [
+        "W09"
+      ],
+      "business_services": [
+        "BS06"
+      ],
+      "config_notes": [
+        "30-day immutable setting (does not by itself prove every service can meet its RTO)."
+      ],
+      "unknowns": [
+        "Firmware/version"
+      ],
+      "evidence_ids": [
+        "S01",
+        "S05"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row N08; Evidence controls and business impact",
+      "tags": [
+        "backup",
+        "repository",
+        "immutable",
+        "hardened linux"
+      ]
+    },
+    {
+      "asset_id": "N09",
+      "name": "Storage arrays",
+      "category": "storage_appliance",
+      "count": 2,
+      "platform": {
+        "os": "Dell PowerStore OS",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "Dell PowerStore",
+          "version": null
+        }
+      ],
+      "services": [
+        "Primary storage"
+      ],
+      "zone": "STORAGE",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [],
+      "dependents": [
+        "H01"
+      ],
+      "business_services": [
+        "BS06"
+      ],
+      "config_notes": [],
+      "unknowns": [
+        "PowerStore OS version"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row N09",
+      "tags": [
+        "dell",
+        "powerstore",
+        "storage",
+        "san"
+      ]
+    },
+    {
+      "asset_id": "N10",
+      "name": "vCenter appliances",
+      "category": "virtual_appliance",
+      "count": 2,
+      "platform": {
+        "os": "VMware vCenter Server 8.0 appliance",
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [
+        {
+          "name": "VMware vCenter Server",
+          "version": "8.0",
+          "build": null
+        }
+      ],
+      "services": [
+        "Virtualization management"
+      ],
+      "zone": "MGMT",
+      "zone_basis": "inferred",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "W01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "H01"
+      ],
+      "business_services": [
+        "BS06"
+      ],
+      "config_notes": [
+        "Virtual appliance, not counted in the 60 server VMs."
+      ],
+      "unknowns": [
+        "vCenter build"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, row N10",
+      "tags": [
+        "vmware",
+        "vcenter",
+        "virtualization",
+        "management"
+      ]
+    },
+    {
+      "asset_id": "N11",
+      "name": "Managed wireless access points",
+      "category": "network_appliance",
+      "count": 40,
+      "platform": {
+        "os": null,
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "Corporate and guest Wi-Fi"
+      ],
+      "zone": null,
+      "zone_basis": null,
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [
+        "N06"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [
+        "Model",
+        "Firmware"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, additional devices",
+      "tags": [
+        "wireless",
+        "access point",
+        "wifi"
+      ]
+    },
+    {
+      "asset_id": "P01",
+      "name": "Printers",
+      "category": "iot",
+      "count": 30,
+      "platform": {
+        "os": null,
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "Printing",
+        "Scanning"
+      ],
+      "zone": "IOT",
+      "zone_basis": "stated",
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "none",
+      "owner": null,
+      "depends_on": [],
+      "dependents": [
+        "W06"
+      ],
+      "business_services": [
+        "BS05"
+      ],
+      "config_notes": [],
+      "unknowns": [
+        "Models",
+        "Firmware"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, additional devices",
+      "tags": [
+        "printer",
+        "scanner",
+        "iot"
+      ]
+    },
+    {
+      "asset_id": "C01",
+      "name": "Entra ID",
+      "category": "cloud_service",
+      "count": 1,
+      "platform": {
+        "os": null,
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "Cloud identity",
+        "MFA"
+      ],
+      "zone": null,
+      "zone_basis": null,
+      "sites": null,
+      "tier": "Tier 0",
+      "tier_basis": "inferred",
+      "internet_exposure": "not_applicable",
+      "owner": null,
+      "depends_on": [
+        "W03"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "C02",
+        "C04"
+      ],
+      "business_services": [
+        "BS01"
+      ],
+      "config_notes": [
+        "MFA has two emergency-account exceptions."
+      ],
+      "unknowns": [
+        "VPN fallback account status"
+      ],
+      "evidence_ids": [
+        "S01"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, cloud services paragraph",
+      "tags": [
+        "entra",
+        "azure ad",
+        "cloud identity",
+        "mfa",
+        "saas"
+      ]
+    },
+    {
+      "asset_id": "C02",
+      "name": "Microsoft 365 (Exchange Online, SharePoint, Teams, OneDrive)",
+      "category": "cloud_service",
+      "count": 1,
+      "platform": {
+        "os": null,
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "Email",
+        "Collaboration",
+        "File storage"
+      ],
+      "zone": null,
+      "zone_basis": null,
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "not_applicable",
+      "owner": null,
+      "depends_on": [
+        "C01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [
+        "BS05"
+      ],
+      "config_notes": [
+        "No on-premises Exchange server exists."
+      ],
+      "unknowns": [],
+      "evidence_ids": [
+        "S01",
+        "S04"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, cloud services paragraph",
+      "tags": [
+        "microsoft 365",
+        "m365",
+        "exchange online",
+        "sharepoint",
+        "teams",
+        "onedrive",
+        "saas"
+      ]
+    },
+    {
+      "asset_id": "C03",
+      "name": "Microsoft Sentinel",
+      "category": "cloud_service",
+      "count": 1,
+      "platform": {
+        "os": null,
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "SIEM"
+      ],
+      "zone": null,
+      "zone_basis": null,
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "not_applicable",
+      "owner": null,
+      "depends_on": [
+        "W18"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [],
+      "business_services": [],
+      "config_notes": [
+        "AD authentication, M365 audit, firewall and VPN logs retained online 90 days."
+      ],
+      "unknowns": [],
+      "evidence_ids": [
+        "S01",
+        "S04"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, cloud services paragraph; Evidence S04",
+      "tags": [
+        "sentinel",
+        "siem",
+        "logging",
+        "detection"
+      ]
+    },
+    {
+      "asset_id": "C04",
+      "name": "Intune and Defender for Endpoint",
+      "category": "cloud_service",
+      "count": 1,
+      "platform": {
+        "os": null,
+        "os_build": null,
+        "installed_kbs": null
+      },
+      "software": [],
+      "services": [
+        "Endpoint management",
+        "EDR"
+      ],
+      "zone": null,
+      "zone_basis": null,
+      "sites": null,
+      "tier": null,
+      "internet_exposure": "not_applicable",
+      "owner": null,
+      "depends_on": [
+        "C01"
+      ],
+      "depends_on_basis": "inferred",
+      "dependents": [
+        "E01",
+        "E02",
+        "E04"
+      ],
+      "business_services": [],
+      "config_notes": [],
+      "unknowns": [],
+      "evidence_ids": [
+        "S01",
+        "S04"
+      ],
+      "source_locator": "Endpoints appliances and cloud services, cloud services paragraph",
+      "tags": [
+        "intune",
+        "defender",
+        "mde",
+        "edr",
+        "endpoint management"
+      ]
+    }
+  ],
+  "business_services": [
+    {
+      "service_id": "BS01",
+      "name": "Identity and privileged management",
+      "consequence": "Loss of authentication, unauthorized identity changes or broad privileged access",
+      "rto_hours": 4,
+      "rpo_hours": 4,
+      "scope": "Identity outage can block new logins across 1,000 staff; existing sessions may continue temporarily.",
+      "supporting_assets": [
+        "W01",
+        "W02",
+        "W03",
+        "W08",
+        "E03",
+        "C01"
+      ],
+      "supporting_assets_basis": "inferred",
+      "recovery_notes": "Restore exercise did not cover complete forest recovery.",
+      "evidence_ids": [
+        "S05"
+      ],
+      "source_locator": "Evidence controls and business impact, service table row 1"
+    },
+    {
+      "service_id": "BS02",
+      "name": "ERP and orders",
+      "consequence": "Delayed fulfillment, invoice tampering or loss of customer order data",
+      "rto_hours": 4,
+      "rpo_hours": 1,
+      "scope": "ERP supports 300 daily operations staff; outages beyond four hours delay orders and invoicing.",
+      "supporting_assets": [
+        "W11",
+        "W12",
+        "L02"
+      ],
+      "supporting_assets_basis": "inferred",
+      "recovery_notes": "Restore exercise covered one ERP VM.",
+      "evidence_ids": [
+        "S05"
+      ],
+      "source_locator": "Evidence controls and business impact, service table row 2"
+    },
+    {
+      "service_id": "BS03",
+      "name": "Payroll and legacy finance",
+      "consequence": "Payroll disruption or disclosure/change of banking and HR data",
+      "rto_hours": 8,
+      "rpo_hours": 4,
+      "scope": "Finance holds payroll and banking data for 1,000 employees.",
+      "supporting_assets": [
+        "W15",
+        "W12",
+        "W05"
+      ],
+      "supporting_assets_basis": "inferred",
+      "recovery_notes": null,
+      "evidence_ids": [
+        "S05"
+      ],
+      "source_locator": "Evidence controls and business impact, service table row 3"
+    },
+    {
+      "service_id": "BS04",
+      "name": "Customer portal",
+      "consequence": "Loss of service or contact and order-history exposure",
+      "rto_hours": 8,
+      "rpo_hours": 4,
+      "scope": "12,000 customer accounts with contact and order history. Payment cards are processed by an external provider.",
+      "supporting_assets": [
+        "N03",
+        "L01",
+        "W13",
+        "W12"
+      ],
+      "supporting_assets_basis": "inferred",
+      "recovery_notes": null,
+      "evidence_ids": [
+        "S05"
+      ],
+      "source_locator": "Evidence controls and business impact, service table row 4"
+    },
+    {
+      "service_id": "BS05",
+      "name": "Collaboration and general files",
+      "consequence": "Work interruption or confidential document disclosure",
+      "rto_hours": 24,
+      "rpo_hours": 8,
+      "scope": null,
+      "supporting_assets": [
+        "W05",
+        "W06",
+        "P01",
+        "C02"
+      ],
+      "supporting_assets_basis": "inferred",
+      "recovery_notes": "Restore exercise covered one file share.",
+      "evidence_ids": [
+        "S05"
+      ],
+      "source_locator": "Evidence controls and business impact, service table row 5"
+    },
+    {
+      "service_id": "BS06",
+      "name": "Recovery infrastructure",
+      "consequence": "Loss of recovery capability can amplify a separate outage",
+      "rto_hours": 8,
+      "rpo_hours": 24,
+      "scope": null,
+      "supporting_assets": [
+        "W09",
+        "N08",
+        "H01",
+        "N09",
+        "N10"
+      ],
+      "supporting_assets_basis": "inferred",
+      "recovery_notes": "30-day immutable backup setting alone does not establish that every service can meet its target.",
+      "evidence_ids": [
+        "S05"
+      ],
+      "source_locator": "Evidence controls and business impact, service table row 6"
+    }
+  ],
+  "business_services_notes": "RTO is the target restoration time; RPO is the target maximum age of lost data. Targets are synthetic business requirements and support impact analysis; they are not risk ratings.",
+  "data_assets": [
+    {
+      "data_id": "D01",
+      "description": "Customer accounts with contact and order history",
+      "volume": "12,000 accounts",
+      "location_assets": [
+        "W12",
+        "W13"
+      ],
+      "location_basis": "inferred",
+      "business_services": [
+        "BS04"
+      ]
+    },
+    {
+      "data_id": "D02",
+      "description": "Payroll and banking data",
+      "volume": "1,000 employees",
+      "location_assets": [
+        "W15",
+        "W12"
+      ],
+      "location_basis": "inferred",
+      "business_services": [
+        "BS03"
+      ]
+    },
+    {
+      "data_id": "D03",
+      "description": "ERP order and invoice data",
+      "volume": null,
+      "location_assets": [
+        "W12"
+      ],
+      "location_basis": "inferred",
+      "business_services": [
+        "BS02"
+      ]
+    },
+    {
+      "data_id": "D04",
+      "description": "Finance and HR department shares",
+      "volume": null,
+      "location_assets": [
+        "W05"
+      ],
+      "location_basis": "stated",
+      "business_services": [
+        "BS03",
+        "BS05"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "control_id": "CTL01",
+      "control": "Default deny for unlisted inter-zone traffic and unsolicited Internet ingress",
+      "scope": "All zones",
+      "status": "in_place",
+      "evidence_ids": [
+        "S02"
+      ]
+    },
+    {
+      "control_id": "CTL02",
+      "control": "No Internet-facing RDP, SMB, LDAP, SQL or appliance management",
+      "scope": "Perimeter",
+      "status": "in_place",
+      "evidence_ids": [
+        "S02"
+      ]
+    },
+    {
+      "control_id": "CTL03",
+      "control": "Tier 0 administration only from dedicated privileged access workstations with phishing-resistant MFA",
+      "scope": "W01, W02, W03, E03",
+      "status": "in_place",
+      "evidence_ids": []
+    },
+    {
+      "control_id": "CTL04",
+      "control": "MFA",
+      "scope": "C01",
+      "status": "exception",
+      "exception": "Two emergency-account exceptions; VPN fallback account status unknown.",
+      "evidence_ids": []
+    },
+    {
+      "control_id": "CTL05",
+      "control": "SMB1 disabled",
+      "scope": "W05",
+      "status": "in_place",
+      "evidence_ids": [
+        "S03"
+      ]
+    },
+    {
+      "control_id": "CTL06",
+      "control": "SMB signing required",
+      "scope": "W05",
+      "status": "exception",
+      "exception": "Not required on FILE04.",
+      "evidence_ids": [
+        "S03"
+      ]
+    },
+    {
+      "control_id": "CTL07",
+      "control": "Print Spooler disabled on domain controllers",
+      "scope": "W01",
+      "status": "in_place",
+      "evidence_ids": []
+    },
+    {
+      "control_id": "CTL08",
+      "control": "Separate backup credentials and immutable repository (30-day setting)",
+      "scope": "W09, N08",
+      "status": "in_place",
+      "evidence_ids": [
+        "S05"
+      ]
+    },
+    {
+      "control_id": "CTL09",
+      "control": "Log retention: AD authentication, M365 audit, firewall and VPN logs online for 90 days",
+      "scope": "C03",
+      "status": "in_place",
+      "evidence_ids": [
+        "S04"
+      ]
+    },
+    {
+      "control_id": "CTL10",
+      "control": "Endpoint sensor coverage",
+      "scope": "E01-E04",
+      "status": "exception",
+      "exception": "Twelve E02 sensors stale (heartbeat > 7 days).",
+      "evidence_ids": [
+        "S03",
+        "S04"
+      ]
+    },
+    {
+      "control_id": "CTL11",
+      "control": "No local admin rights for standard users",
+      "scope": "E02",
+      "status": "exception",
+      "exception": "Ten E02 devices have local admin exceptions.",
+      "evidence_ids": [
+        "S03"
+      ]
+    },
+    {
+      "control_id": "CTL12",
+      "control": "NTLM restriction",
+      "scope": "W15",
+      "status": "exception",
+      "exception": "Vendor exception retains NTLM for a service account; password last rotated 180 days before snapshot.",
+      "evidence_ids": []
+    },
+    {
+      "control_id": "CTL13",
+      "control": "Patch approval process",
+      "scope": "W15",
+      "status": "partial",
+      "exception": "Approval recorded 60 days before snapshot; installed KBs unknown.",
+      "evidence_ids": []
+    },
+    {
+      "control_id": "CTL14",
+      "control": "Printer driver approval policy",
+      "scope": "W06",
+      "status": "in_place",
+      "exception": "Actual driver inventory unknown.",
+      "evidence_ids": []
+    }
+  ],
+  "controls_notes": "Controls with an empty evidence_ids list are stated in asset descriptions rather than in an S-numbered evidence record; cite the asset record's source_locator instead.",
+  "absences": [
+    {
+      "item": "Kubernetes",
+      "scope": "Entire environment, including DEV Docker hosts",
+      "basis": "explicit_absence_statement",
+      "evidence_ids": [
+        "S06"
+      ]
+    },
+    {
+      "item": "ingress-nginx",
+      "scope": "Entire environment, including DEV Docker hosts",
+      "basis": "explicit_absence_statement",
+      "evidence_ids": [
+        "S06"
+      ]
+    },
+    {
+      "item": "On-premises Exchange Server",
+      "scope": "Entire environment",
+      "basis": "explicit_absence_statement",
+      "evidence_ids": []
+    },
+    {
+      "item": "Internet-facing RDP, SMB, LDAP, SQL or appliance management",
+      "scope": "Perimeter",
+      "basis": "explicit_absence_statement",
+      "evidence_ids": [
+        "S02"
+      ]
+    }
+  ],
+  "absences_notes": "An explicit absence statement can support non-applicability. A lookup that simply returns no match cannot.",
+  "evidence": [
+    {
+      "evidence_id": "S01",
+      "title": "Asset register",
+      "source_mode": "simulated",
+      "date": null,
+      "scope": "All assets",
+      "facts": [
+        "1,000 endpoints, 60 server VMs, 6 hypervisors, 32 appliances, 40 access points and 30 printers.",
+        "Four cloud service records are logical services, not device counts.",
+        "VMs exclude virtual appliances N03 and N10.",
+        "The offline CA is included in the 60 VM count."
+      ],
+      "limitations": "Cohort-level; does not record exact OS builds, installed KBs or most firmware versions.",
+      "source_locator": "Evidence controls and business impact, evidence table row S01"
+    },
+    {
+      "evidence_id": "S02",
+      "title": "Network design and reviewed access policy",
+      "source_mode": "simulated",
+      "date": null,
+      "scope": "All zones and the perimeter",
+      "facts": [
+        "Unlisted inter-zone traffic and unsolicited Internet ingress denied by default.",
+        "No Internet-facing RDP, SMB, LDAP, SQL or appliance management."
+      ],
+      "limitations": "Summarized flows are assessment context, not deployable firewall configuration.",
+      "source_locator": "Evidence controls and business impact, evidence table row S02"
+    },
+    {
+      "evidence_id": "S03",
+      "title": "Control and exception register",
+      "source_mode": "simulated",
+      "date": null,
+      "scope": "W05, E02",
+      "facts": [
+        "SMB signing is not required on FILE04 within W05; SMB1 disabled across W05.",
+        "Twelve E02 sensors stale; ten E02 devices have local admin exception."
+      ],
+      "limitations": "Overlap between the stale-sensor and local-admin subsets is unknown.",
+      "source_locator": "Evidence controls and business impact, evidence table row S03"
+    },
+    {
+      "evidence_id": "S04",
+      "title": "Telemetry coverage summary",
+      "source_mode": "simulated",
+      "date": null,
+      "scope": "Logging and endpoint telemetry",
+      "facts": [
+        "AD authentication, Microsoft 365 audit, firewall and VPN logs retained online for 90 days.",
+        "Twelve E02 endpoint sensor heartbeats are older than seven days."
+      ],
+      "limitations": "Does not describe DNS server logging or detection content.",
+      "source_locator": "Evidence controls and business impact, evidence table row S04"
+    },
+    {
+      "evidence_id": "S05",
+      "title": "Business impact and recovery worksheet",
+      "source_mode": "simulated",
+      "date": null,
+      "scope": "Business services BS01-BS06",
+      "facts": [
+        "Identity outage can block new logins across 1,000 staff; existing sessions may continue temporarily.",
+        "ERP supports 300 daily operations staff; outages beyond four hours delay orders and invoicing.",
+        "RTO/RPO targets per business service (see business_services).",
+        "Restore exercise covered one file share and one ERP VM, not complete forest recovery."
+      ],
+      "limitations": "Recovery targets are synthetic requirements, not demonstrated capability.",
+      "source_locator": "Evidence controls and business impact, evidence table row S05 and service table"
+    },
+    {
+      "evidence_id": "S06",
+      "title": "Absence declaration",
+      "source_mode": "simulated",
+      "date": null,
+      "scope": "Entire defined company",
+      "facts": [
+        "The asset register is complete at cohort level for the defined company.",
+        "Kubernetes and ingress-nginx are explicitly absent, including from the DEV Docker hosts."
+      ],
+      "limitations": "Completeness is at cohort level, not per host.",
+      "source_locator": "Evidence controls and business impact, evidence table row S06"
+    }
+  ],
+  "global_unknowns": [
+    {
+      "id": "GU01",
+      "unknown": "Exact OS builds and installed KBs for all Windows servers and endpoints",
+      "basis": "stated (intentionally missing)"
+    },
+    {
+      "id": "GU02",
+      "unknown": "Most appliance firmware and precise patch builds",
+      "basis": "stated (intentionally missing)"
+    },
+    {
+      "id": "GU03",
+      "unknown": "Application versions: directory sync, Configuration Manager, Veeam, ERP, GitLab, nginx, OpenSSH, Docker",
+      "basis": "stated or not supplied"
+    },
+    {
+      "id": "GU04",
+      "unknown": "Named owners per asset record",
+      "basis": "in official JSON fixture, not in the .docx"
+    },
+    {
+      "id": "GU05",
+      "unknown": "Exact branch and recovery-site subnet octets and which zones exist at each site",
+      "basis": "in official JSON fixture, not in the .docx"
+    },
+    {
+      "id": "GU06",
+      "unknown": "Official 16 permitted flow records",
+      "basis": "in official JSON fixture, not in the .docx; flows here are reconstructed"
+    },
+    {
+      "id": "GU07",
+      "unknown": "VPN fallback account status",
+      "basis": "stated unknown"
+    },
+    {
+      "id": "GU08",
+      "unknown": "Certificate template permissions and enrollment settings",
+      "basis": "stated not supplied"
+    },
+    {
+      "id": "GU09",
+      "unknown": "Printer driver inventory on W06",
+      "basis": "stated unknown"
+    }
+  ]
+}
