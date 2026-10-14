@@ -99,6 +99,12 @@ Everything else is in `config/settings.json`. A copy is saved with every run (`o
 | `retry` | 2 attempts, 2 s back-off, 30 s timeout | Design: retry once, then cache |
 | `fault_injection` | all `false` | Controlled-failure switches (set from the CLI, not by editing) |
 
+## AI Disclosure
+Claude was used to generate an assessment schema based on my described design and provide validation and policy checks that would help ensure the outputted results were comprehensive and accurate. It was also used to turn my workflow steps table into a workflow diagram. See here: https://claude.ai/share/ffd60cba-c1ca-46e5-9482-ba639b82eab8
+
+Claude Code within VSCode was used to support generating the actual code for the triage agent and workflow. The relevant chat history was exported in JSONL format and is saved in the repo under the .claude folder.
+
+
 ## Running the complete workflow
 
 ```powershell
